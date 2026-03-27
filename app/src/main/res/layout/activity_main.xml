@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="24dp"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SMS"
+                android:textSize="42sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.15"
+                android:textColor="@color/accent_blue"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OVH · Sender ID Alphanumérique"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"
+                android:letterSpacing="0.08"/>
+        </LinearLayout>
+
+        <!-- ══ SECTION : CONFIGURATION ════════════════════════════════════════ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CONFIGURATION OVH"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.12"
+            android:textColor="@color/accent_blue"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Service Name (Sender ID) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilServiceName"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Sender ID (ex: MISESERVICE)"
+            app:boxStrokeColor="@color/accent_blue"
+            app:hintTextColor="@color/text_secondary"
+            app:boxBackgroundColor="@color/card_bg"
+            android:layout_marginBottom="14dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etServiceName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLength="11"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Login OVH -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilLogin"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Login OVH (ex: sms-ab12345-1)"
+            app:boxStrokeColor="@color/accent_blue"
+            app:hintTextColor="@color/text_secondary"
+            app:boxBackgroundColor="@color/card_bg"
+            android:layout_marginBottom="14dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password OVH -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Mot de passe OVH SMS"
+            app:boxStrokeColor="@color/accent_blue"
+            app:hintTextColor="@color/text_secondary"
+            app:boxBackgroundColor="@color/card_bg"
+            app:endIconMode="password_toggle"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginBottom="20dp"/>
+
+        <!-- ══ SECTION : MESSAGE ═══════════════════════════════════════════════ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DESTINATAIRE ET MESSAGE"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.12"
+            android:textColor="@color/accent_blue"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Recipient -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilRecipient"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Numéro destinataire (+336XXXXXXXX)"
+            app:boxStrokeColor="@color/accent_blue"
+            app:hintTextColor="@color/text_secondary"
+            app:boxBackgroundColor="@color/card_bg"
+            android:layout_marginBottom="14dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etRecipient"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Message -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilMessage"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Votre message"
+            app:boxStrokeColor="@color/accent_blue"
+            app:hintTextColor="@color/text_secondary"
+            app:boxBackgroundColor="@color/card_bg"
+            android:layout_marginBottom="6dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="4"
+                android:maxLines="8"
+                android:gravity="top"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Char Count -->
+        <TextView
+            android:id="@+id/tvCharCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 / 160  •  1 SMS"
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            android:layout_gravity="end"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- ══ SEND BUTTON ═════════════════════════════════════════════════════ -->
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Envoyer le SMS"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05"
+            android:backgroundTint="@color/accent_blue"
+            android:textColor="@color/white"
+            android:stateListAnimator="@null"
+            style="@style/Widget.MaterialComponents.Button"/>
+
+        <!-- Progress -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:indeterminateTint="@color/accent_blue"
+            android:visibility="gone"/>
+
+        <!-- ══ STATUS CARD ═════════════════════════════════════════════════════ -->
+        <LinearLayout
+            android:id="@+id/cardStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_status_success"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/success"/>
+
+            <TextView
+                android:id="@+id/tvCreditsInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <!-- ══ INFO NOTE ═══════════════════════════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_info"
+            android:padding="14dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ℹ"
+                android:textSize="16sp"
+                android:textColor="@color/accent_blue"
+                android:layout_marginEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Le Sender ID alphanumérique est limité à 11 caractères (lettres et chiffres). Le destinataire ne peut pas répondre au SMS."
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary"
+                android:lineSpacingExtra="3dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

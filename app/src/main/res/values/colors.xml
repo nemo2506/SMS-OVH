@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Backgrounds -->
+    <color name="bg_dark">#0F1117</color>
+    <color name="card_bg">#1A1D27</color>
+    <color name="divider">#2A2D3A</color>
+
+    <!-- Text -->
+    <color name="text_primary">#EAEAF0</color>
+    <color name="text_secondary">#7B7F96</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Accent -->
+    <color name="accent_blue">#3D8BFF</color>
+
+    <!-- Feedback -->
+    <color name="success">#34D399</color>
+    <color name="error">#F87171</color>
+    <color name="warning">#FBBF24</color>
+
+    <!-- Material defaults -->
+    <color name="colorPrimary">#3D8BFF</color>
+    <color name="colorPrimaryVariant">#2563EB</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorSecondary">#3D8BFF</color>
+    <color name="colorSecondaryVariant">#2563EB</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+    <color name="colorSurface">#1A1D27</color>
+    <color name="colorOnSurface">#EAEAF0</color>
+    <color name="colorBackground">#0F1117</color>
+    <color name="colorOnBackground">#EAEAF0</color>
+</resources>
