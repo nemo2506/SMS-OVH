@@ -30,4 +30,5 @@
     <string name="sms_sent_success">SMS envoyé avec succès.</string>
     <string name="sender_id_not_allowed">Sender ID non autorisé</string>
     <string name="app_name">OVH SMS</string>
+    <string name="sim_absente_ou_invalide">"Aucune carte SIM détectée ou SIM non prête. Impossible d'envoyer le SMS."</string>
 </resources>

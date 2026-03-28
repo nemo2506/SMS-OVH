@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.telephony.SmsManager
+import android.telephony.TelephonyManager
 import android.widget.Toast
 import com.miseservice.smsovh.R
 
@@ -15,6 +16,13 @@ object SmsHelper {
     private const val SMS_DELIVERED = "SMS_DELIVERED"
 
     fun sendSmsWithStatus(context: Context, phoneNumber: String, message: String) {
+        // Vérification SIM
+        val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        val simState = telephonyManager.simState
+        if (simState != TelephonyManager.SIM_STATE_READY) {
+            Toast.makeText(context, context.getString(R.string.sim_absente_ou_invalide), Toast.LENGTH_LONG).show()
+            return
+        }
         val sentPI = PendingIntent.getBroadcast(
             context, 0,
             Intent(SMS_SENT),
@@ -29,7 +37,6 @@ object SmsHelper {
         context.registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(ctx: Context, intent: Intent) {
                 when (resultCode) {
-                    Activity.RESULT_OK -> Toast.makeText(ctx, ctx.getString(R.string.sms_sent), Toast.LENGTH_SHORT).show()
                     SmsManager.RESULT_ERROR_GENERIC_FAILURE -> Toast.makeText(ctx, ctx.getString(R.string.sms_generic_failure), Toast.LENGTH_SHORT).show()
                     SmsManager.RESULT_ERROR_NO_SERVICE -> Toast.makeText(ctx, ctx.getString(R.string.sms_no_service), Toast.LENGTH_SHORT).show()
                     SmsManager.RESULT_ERROR_NULL_PDU -> Toast.makeText(ctx, ctx.getString(R.string.sms_null_pdu), Toast.LENGTH_SHORT).show()
@@ -40,7 +47,7 @@ object SmsHelper {
         context.registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(ctx: Context, intent: Intent) {
                 when (resultCode) {
-                    Activity.RESULT_OK -> Toast.makeText(ctx, ctx.getString(R.string.sms_delivered), Toast.LENGTH_SHORT).show()
+                    Activity.RESULT_OK -> Toast.makeText(ctx, ctx.getString(R.string.sms_sent_success), Toast.LENGTH_SHORT).show()
                     Activity.RESULT_CANCELED -> Toast.makeText(ctx, ctx.getString(R.string.sms_not_delivered), Toast.LENGTH_SHORT).show()
                 }
             }
