@@ -127,14 +127,31 @@ app/
 
 ---
 
+## 🧹 Nettoyage GitHub & Fichiers volumineux
+
+<div style="background:#FFF3CD;padding:1em;border-radius:8px;border:1px solid #FBBF24;">
+
+- Le dépôt a été nettoyé avec [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/) pour supprimer tous les fichiers volumineux (>100 Mo) de l’historique Git (ex : .zip, .jar, gradle-8.5-bin/).
+- Le fichier `.gitignore` protège désormais contre l’ajout de tout fichier binaire ou archive inutile (voir la racine du projet).
+- **Limite GitHub :** aucun fichier >100 Mo n’est accepté, et il est recommandé de ne pas dépasser 50 Mo par fichier.
+- Après nettoyage, il est conseillé de recloner le dépôt pour éviter tout conflit d’historique.
+
+</div>
+
+---
+
 ## 📝 Confidentialité Git
 
 <div style="background:#F7F1EB;padding:1em;border-radius:8px;border:1px solid #F08A3C;">
 
 - `.gitignore` :
-  - Exclut `.idea/`, `*.iml`, `local.properties`, `build/`, `*.apk`, etc.
+  - Exclut `.idea/`, `*.iml`, `local.properties`, `build/`, `*.apk`, `*.zip`, `*.jar`, `gradle-8.5-bin/`, etc.
+  - Protège contre l’ajout de fichiers volumineux ou sensibles.
 - `.git/info/exclude` :
   - Exclut localement les fichiers sensibles même si `.gitignore` est modifié
+- **Historique GitHub nettoyé** :
+  - Tous les fichiers binaires volumineux ont été supprimés de l’historique avec BFG.
+  - Si vous aviez cloné le dépôt avant mars 2026, reclonez-le pour éviter les erreurs de push.
 
 </div>
 
