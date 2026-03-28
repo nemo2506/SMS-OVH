@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# .gitignore — généré pour MS-OVH-SMS
-
-# Android/Gradle
 .idea/
 *.iml
 local.properties
@@ -85,23 +81,92 @@ Thumbs.db
 Desktop.ini
 
 # Protéger le dossier SOURCE (déjà ignoré)
-=======
-# Android/IntelliJ
+/SOURCE/
+
+# Exclusions supplémentaires (fusion)
+captures/
+output.json
+# Sensitive files
+**/local.properties
+**/secrets.properties
+# Exclude all user-specific and IDE config
+**/.idea/
+**/.vscode/
+# Exclude generated files
+**/build/
+**/generated/
+# Exclude APKs and outputs
+**/outputs/
+# Exclude test reports
+**/reports/
+# Exclude gradle wrapper logs
+**/gradle/wrapper/gradle-wrapper.properties.lock
 .idea/
 *.iml
-.gradle/
-build/
 local.properties
 .DS_Store
+/build/
+/app/build/
 *.apk
 *.ap_*
-*.hprof
+*.dex
+*.class
 *.log
+*.hprof
+
+# Fichiers volumineux et binaires
+*.zip
+*.jar
+*.aar
+*.tar.gz
+*.7z
+*.tgz
+*.tar
+*.gz
+*.bin
+*.exe
+*.dll
+*.so
+*.dylib
+*.pdb
+*.tmp
+*.swp
+*.bak
+
+# Dossiers générés par Gradle
+/gradle-8.5-bin/
+/gradle-8.5-bin.zip
+/gradle-8.5-bin/
+/gradle/
+/gradle-*/
+
+# Exclure les jars du dossier gradle-8.5-bin
+/gradle-8.5-bin/**/*.jar
+
+# Exclure les APKs générés
+/app/release/*.apk
+
+# Exclure les fichiers de configuration utilisateur
 *.keystore
 *.jks
-*.bak
-*.swp
+
+# Exclure les fichiers de rapport
+/build/reports/
+
+# Exclure les fichiers de cache
+/.gradle/
+/.cxx/
+
+# Exclure les fichiers de test générés
+/app/build/intermediates/
+/app/build/generated/
+
+# Exclure les fichiers de configuration Android Studio
+.cxx/
+
+# Exclure les fichiers temporaires
 *.tmp
+<<<<<<< HEAD
 captures/
 output.json
 # Sensitive files
@@ -120,4 +185,24 @@ output.json
 # Exclude gradle wrapper logs
 **/gradle/wrapper/gradle-wrapper.properties.lock
 >>>>>>> 8e54822 (🔒 Sécurité : README, .gitignore, architecture MVVM, exclusion SOURCE, refonte complète)
+=======
+*.temp
+
+# Exclure les fichiers de sauvegarde
+*~
+
+# Exclure les fichiers de crash
+crashlytics-build.properties
+
+# Exclure les fichiers de signature
+*.pem
+*.crt
+*.der
+
+# Exclure les fichiers inutiles
+Thumbs.db
+Desktop.ini
+
+# Protéger le dossier SOURCE (déjà ignoré)
+>>>>>>> ef26eb5 (fix(git): exclure les fichiers volumineux et binaires du dépôt (.gitignore, nettoyage index))
 /SOURCE/
