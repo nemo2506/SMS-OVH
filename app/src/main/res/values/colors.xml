@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="smsovh_primary">#F08A3C</color>
+    <color name="smsovh_primary_dark">#C46A2F</color>
+    <color name="smsovh_primary_container">#4D2712</color>
+    <color name="smsovh_secondary">#D8B39A</color>
+    <color name="smsovh_secondary_container">#43342B</color>
+    <color name="smsovh_tertiary">#CEC6BF</color>
+    <color name="smsovh_background">#14100D</color>
+    <color name="smsovh_surface">#1F1915</color>
+    <color name="smsovh_surface_alt">#2A221D</color>
+    <color name="smsovh_divider">#524238</color>
+    <color name="smsovh_on_dark">#F7F1EB</color>
+    <color name="smsovh_on_muted">#D9CBC1</color>
+    <color name="smsovh_on_primary">#2A1408</color>
+    <color name="smsovh_light_background">#F3F5F7</color>
+    <color name="smsovh_light_surface">#FFFFFF</color>
+    <color name="smsovh_light_surface_alt">#E7ECF1</color>
+    <color name="smsovh_on_light">#1E252C</color>
     <!-- Backgrounds -->
     <color name="bg_dark">#0F1117</color>
     <color name="card_bg">#1A1D27</color>

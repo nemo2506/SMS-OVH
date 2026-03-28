@@ -1,4 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OVH SMS</string>
+    <string name="permission_required_title">Permission requise</string>
+    <string name="permission_required_message">"L'application a besoin de la permission SMS pour envoyer le message."</string>
+    <string name="permission_denied_message">"Permission SMS refusée. Impossible d'envoyer le SMS."</string>
+    <string name="permission_denied_permanently_message">"Vous avez définitivement refusé la permission SMS. Veuillez l'activer dans les paramètres pour envoyer des SMS."</string>
+    <string name="settings">Paramètres</string>
+    <string name="allow">Autoriser</string>
+    <string name="cancel">Annuler</string>
+    <string name="send_sms">Envoyer le SMS</string>
+    <string name="sender_id_hint">Sender ID (ex: MISESERVICE)</string>
+    <string name="login_hint">Login OVH (ex: sms–ab12345–1)</string>
+    <string name="password_hint">Mot de passe OVH SMS</string>
+    <string name="recipient_hint">Numéro destinataire (+336XXXXXXXX)</string>
+    <string name="message_hint">Votre message</string>
+    <string name="config_ovh">CONFIGURATION OVH</string>
+    <string name="recipient_and_message">DESTINATAIRE ET MESSAGE</string>
+    <string name="char_count">%1$d / 160  •  %2$d SMS</string>
+    <string name="header_sms">SMS</string>
+    <string name="header_ovh">OVH · Sender ID Alphanumérique</string>
+    <string name="info_sender_id">Le Sender ID alphanumérique est limité à 11 caractères (lettres et chiffres). Le destinataire ne peut pas répondre au SMS.</string>
+    <string name="missing_number_or_message">Numéro ou message manquant.</string>
+    <string name="sms_sent_success">SMS envoyé avec succès.</string>
+    <string name="sender_id_not_allowed">Sender ID non autorisé</string>
+    <string name="sms_sent">SMS envoyé ✅</string>
+    <string name="sms_generic_failure">Échec générique ❌</string>
+    <string name="sms_no_service">Pas de réseau ❌</string>
+    <string name="sms_null_pdu">PDU null ❌</string>
+    <string name="sms_radio_off">Radio désactivée ❌</string>
+    <string name="sms_delivered">SMS livré au destinataire ✅</string>
+    <string name="sms_not_delivered">SMS non livré ❌</string>
 </resources>

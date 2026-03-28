@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_dark"
+    android:background="@color/smsovh_background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -25,19 +25,19 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SMS"
+                android:text="@string/header_sms"
                 android:textSize="42sp"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="0.15"
-                android:textColor="@color/accent_blue"/>
+                android:textColor="@color/smsovh_primary"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="OVH · Sender ID Alphanumérique"
+                android:text="@string/header_ovh"
                 android:textSize="13sp"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/smsovh_on_dark"
                 android:letterSpacing="0.08"/>
         </LinearLayout>
 
@@ -45,11 +45,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CONFIGURATION OVH"
+            android:text="@string/config_ovh"
             android:textSize="11sp"
             android:textStyle="bold"
             android:letterSpacing="0.12"
-            android:textColor="@color/accent_blue"
+            android:textColor="@color/smsovh_primary"
             android:layout_marginBottom="12dp"/>
 
         <!-- Service Name (Sender ID) -->
@@ -58,9 +58,9 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Sender ID (ex: MISESERVICE)"
-            app:boxStrokeColor="@color/accent_blue"
-            app:hintTextColor="@color/text_secondary"
+            android:hint="@string/sender_id_hint"
+            app:boxStrokeColor="@color/smsovh_primary"
+            app:hintTextColor="@color/smsovh_on_dark"
             app:boxBackgroundColor="@color/card_bg"
             android:layout_marginBottom="14dp">
 
@@ -80,9 +80,9 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Login OVH (ex: sms-ab12345-1)"
-            app:boxStrokeColor="@color/accent_blue"
-            app:hintTextColor="@color/text_secondary"
+            android:hint="@string/login_hint"
+            app:boxStrokeColor="@color/smsovh_primary"
+            app:hintTextColor="@color/smsovh_on_dark"
             app:boxBackgroundColor="@color/card_bg"
             android:layout_marginBottom="14dp">
 
@@ -101,9 +101,9 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Mot de passe OVH SMS"
-            app:boxStrokeColor="@color/accent_blue"
-            app:hintTextColor="@color/text_secondary"
+            android:hint="@string/password_hint"
+            app:boxStrokeColor="@color/smsovh_primary"
+            app:hintTextColor="@color/smsovh_on_dark"
             app:boxBackgroundColor="@color/card_bg"
             app:endIconMode="password_toggle"
             android:layout_marginBottom="24dp">
@@ -128,11 +128,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="DESTINATAIRE ET MESSAGE"
+            android:text="@string/recipient_and_message"
             android:textSize="11sp"
             android:textStyle="bold"
             android:letterSpacing="0.12"
-            android:textColor="@color/accent_blue"
+            android:textColor="@color/smsovh_primary"
             android:layout_marginBottom="12dp"/>
 
         <!-- Recipient -->
@@ -141,9 +141,9 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Numéro destinataire (+336XXXXXXXX)"
-            app:boxStrokeColor="@color/accent_blue"
-            app:hintTextColor="@color/text_secondary"
+            android:hint="@string/recipient_hint"
+            app:boxStrokeColor="@color/smsovh_primary"
+            app:hintTextColor="@color/smsovh_on_dark"
             app:boxBackgroundColor="@color/card_bg"
             android:layout_marginBottom="14dp">
 
@@ -162,9 +162,9 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Votre message"
-            app:boxStrokeColor="@color/accent_blue"
-            app:hintTextColor="@color/text_secondary"
+            android:hint="@string/message_hint"
+            app:boxStrokeColor="@color/smsovh_primary"
+            app:hintTextColor="@color/smsovh_on_dark"
             app:boxBackgroundColor="@color/card_bg"
             android:layout_marginBottom="6dp">
 
@@ -185,9 +185,9 @@
             android:id="@+id/tvCharCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0 / 160  •  1 SMS"
+            android:text="@string/char_count"
             android:textSize="12sp"
-            android:textColor="@color/text_secondary"
+            android:textColor="@color/smsovh_on_dark"
             android:layout_gravity="end"
             android:layout_marginBottom="24dp"/>
 
@@ -196,11 +196,11 @@
             android:id="@+id/btnSend"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Envoyer le SMS"
+            android:text="@string/send_sms"
             android:textSize="15sp"
             android:textStyle="bold"
             android:letterSpacing="0.05"
-            android:backgroundTint="@color/accent_blue"
+            android:backgroundTint="@color/smsovh_primary"
             android:textColor="@color/white"
             android:stateListAnimator="@null"
             style="@style/Widget.MaterialComponents.Button"/>
@@ -212,7 +212,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
-            android:indeterminateTint="@color/accent_blue"
+            android:indeterminateTint="@color/smsovh_primary"
             android:visibility="gone"/>
 
         <!-- ══ STATUS CARD ═════════════════════════════════════════════════════ -->
@@ -239,7 +239,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/smsovh_on_dark"
                 android:layout_marginTop="4dp"
                 android:visibility="gone"/>
         </LinearLayout>
@@ -259,15 +259,15 @@
                 android:layout_height="wrap_content"
                 android:text="ℹ"
                 android:textSize="16sp"
-                android:textColor="@color/accent_blue"
+                android:textColor="@color/smsovh_primary"
                 android:layout_marginEnd="10dp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Le Sender ID alphanumérique est limité à 11 caractères (lettres et chiffres). Le destinataire ne peut pas répondre au SMS."
+                    android:text="@string/info_sender_id"
                 android:textSize="12sp"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/smsovh_on_dark"
                 android:lineSpacingExtra="3dp"/>
         </LinearLayout>
 

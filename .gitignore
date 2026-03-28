@@ -1,0 +1,34 @@
+# Android/IntelliJ
+.idea/
+*.iml
+.gradle/
+build/
+local.properties
+.DS_Store
+*.apk
+*.ap_*
+*.hprof
+*.log
+*.keystore
+*.jks
+*.bak
+*.swp
+*.tmp
+captures/
+output.json
+# Sensitive files
+**/local.properties
+**/secrets.properties
+# Exclude all user-specific and IDE config
+**/.idea/
+**/.vscode/
+# Exclude generated files
+**/build/
+**/generated/
+# Exclude APKs and outputs
+**/outputs/
+# Exclude test reports
+**/reports/
+# Exclude gradle wrapper logs
+**/gradle/wrapper/gradle-wrapper.properties.lock
+/SOURCE/
