@@ -30,4 +30,5 @@
     <string name="sms_radio_off">Radio désactivée ❌</string>
     <string name="sms_delivered">SMS livré au destinataire ✅</string>
     <string name="sms_not_delivered">SMS non livré ❌</string>
+    <string name="sim_absente_ou_invalide">"Aucune carte SIM détectée ou SIM non prête. Impossible d'envoyer le SMS."</string>
 </resources>

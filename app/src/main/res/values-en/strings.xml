@@ -16,7 +16,7 @@
     <string name="cancel">Cancel</string>
     <string name="send_sms">Send SMS</string>
     <string name="sender_id_hint">Sender ID (e.g. MISESERVICE)</string>
-    <string name="login_hint">OVH Login (e.g. sms-ab12345-1)</string>
+    <string name="login_hint">OVH Login (e.g. sms–ab12345-1)</string>
     <string name="password_hint">OVH SMS password</string>
     <string name="recipient_hint">Recipient number (+336XXXXXXXX)</string>
     <string name="message_hint">Your message</string>
@@ -30,4 +30,5 @@
     <string name="sms_sent_success">SMS sent successfully.</string>
     <string name="sender_id_not_allowed">Sender ID not allowed</string>
     <string name="app_name">OVH SMS</string>
+    <string name="sim_absente_ou_invalide">"No SIM card detected or SIM not ready. Unable to send SMS."</string>
 </resources>
