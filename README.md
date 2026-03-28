@@ -127,6 +127,7 @@ app/
 
 ---
 
+<<<<<<< HEAD
 ## 🧹 Nettoyage GitHub & Fichiers volumineux
 
 <div style="background:#FFF3CD;padding:1em;border-radius:8px;border:1px solid #FBBF24;">
@@ -140,11 +141,14 @@ app/
 
 ---
 
+=======
+>>>>>>> 8e54822 (🔒 Sécurité : README, .gitignore, architecture MVVM, exclusion SOURCE, refonte complète)
 ## 📝 Confidentialité Git
 
 <div style="background:#F7F1EB;padding:1em;border-radius:8px;border:1px solid #F08A3C;">
 
 - `.gitignore` :
+<<<<<<< HEAD
   - Exclut `.idea/`, `*.iml`, `local.properties`, `build/`, `*.apk`, `*.zip`, `*.jar`, `gradle-8.5-bin/`, etc.
   - Protège contre l’ajout de fichiers volumineux ou sensibles.
 - `.git/info/exclude` :
@@ -152,6 +156,11 @@ app/
 - **Historique GitHub nettoyé** :
   - Tous les fichiers binaires volumineux ont été supprimés de l’historique avec BFG.
   - Si vous aviez cloné le dépôt avant mars 2026, reclonez-le pour éviter les erreurs de push.
+=======
+  - Exclut `.idea/`, `*.iml`, `local.properties`, `build/`, `*.apk`, etc.
+- `.git/info/exclude` :
+  - Exclut localement les fichiers sensibles même si `.gitignore` est modifié
+>>>>>>> 8e54822 (🔒 Sécurité : README, .gitignore, architecture MVVM, exclusion SOURCE, refonte complète)
 
 </div>
 
