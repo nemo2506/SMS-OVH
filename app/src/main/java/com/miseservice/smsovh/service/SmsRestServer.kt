@@ -31,27 +31,27 @@ class SmsRestServer(val context: Context, port: Int = 8080) : NanoHTTPD(port) {
     private fun handleSendMessage(body: String): Response {
         return try {
             val json = JSONObject(body)
-            val senderId = json.optString("senderId", null)
-            val destinataire = json.optString("destinataire", null)
-            val text = json.optString("text", null)
-            val base64Jpeg = json.optString("base64Jpeg", null)
-            if (destinataire == null || text == null) {
+            val senderId = json.optString("senderId", "")
+            val destinataire = json.optString("destinataire", "")
+            val text = json.optString("text", "")
+            val base64Jpeg = json.optString("base64Jpeg", "")
+            if (destinataire.isBlank() || text.isBlank()) {
                 return newFixedLengthResponse(Response.Status.BAD_REQUEST, MIME_PLAINTEXT, "Missing destinataire or text")
             }
-            Log.i("SmsRestServer", "Reçu: senderId=$senderId, destinataire=$destinataire, text=$text, base64Jpeg=${base64Jpeg?.length}")
-            if (base64Jpeg.isNullOrEmpty()) {
+            Log.i("SmsRestServer", "Reçu: senderId=$senderId, destinataire=$destinataire, text=$text, base64Jpeg=${base64Jpeg.length}")
+            if (base64Jpeg.isEmpty()) {
                 // SMS simple, on attend le retour d'état
                 val latch = CountDownLatch(1)
                 var result: String? = null
                 var status: Response.Status = Response.Status.INTERNAL_ERROR
-                SmsHelper.sendSmsWithStatus(context, destinataire, text) { success, message ->
-                    result = message
+                SmsHelper.sendSmsWithStatus(context, destinataire, text) { success, responseJson ->
+                    result = responseJson.toString()
                     status = if (success) Response.Status.OK else Response.Status.INTERNAL_ERROR
                     latch.countDown()
                 }
                 // On attend max 10 secondes la réponse
                 latch.await(10, TimeUnit.SECONDS)
-                newFixedLengthResponse(status, MIME_PLAINTEXT, result ?: "Timeout SMS")
+                newFixedLengthResponse(status, "application/json", result ?: "{\"success\":false,\"error\":\"Timeout SMS\"}")
             } else {
                 // MMS (à implémenter selon la logique de votre projet)
                 newFixedLengthResponse(Response.Status.NOT_IMPLEMENTED, MIME_PLAINTEXT, "MMS non implémenté")

@@ -1,8 +1,9 @@
 package com.miseservice.smsovh.util
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+import androidx.security.crypto.MasterKey
 import java.util.UUID
 
 object ApiTokenManager {
@@ -14,18 +15,21 @@ object ApiTokenManager {
         var token = prefs.getString(KEY_TOKEN, null)
         if (token == null) {
             token = UUID.randomUUID().toString().replace("-", "")
-            prefs.edit().putString(KEY_TOKEN, token).apply()
+            prefs.edit {
+                putString(KEY_TOKEN, token)
+            }
         }
         return token
     }
 
     private fun getPrefs(context: Context) =
         EncryptedSharedPreferences.create(
-            PREF_NAME,
-            MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
             context,
+            PREF_NAME,
+            MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build(),
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
 }
-

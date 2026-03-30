@@ -17,17 +17,25 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
 object SmsHelper {
+
+            /**
+             * Arrête le service foreground (notification permanente)
+             */
+            fun stopSmsOvhForegroundService(context: Context) {
+                val stopIntent = Intent(context, com.miseservice.smsovh.service.SmsOvhForegroundService::class.java)
+                stopIntent.action = com.miseservice.smsovh.service.SmsOvhForegroundService.ACTION_STOP
+                context.stopService(stopIntent)
+            }
     private const val SMS_SENT = "SMS_SENT"
     private const val SMS_DELIVERED = "SMS_DELIVERED"
 
     // Nouvelle fonction pour envoyer les logs à une API et obtenir la réponse JSON
     private fun sendLogToApi(
-    context: Context,
     message: String,
     callback: (JSONObject) -> Unit
     ) {
         val client = OkHttpClient()
-        val url = "http://${NetworkInfoProvider.getHostIp()}/api/logs" // Remplacer par l'IP de connexion réelle
+        val url = "http://${NetworkInfoProvider.getHostIp()}/api/logs"
         val json = JSONObject().apply { put("message", message) }
         val body = json.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
@@ -63,7 +71,7 @@ object SmsHelper {
             context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         val simState = telephonyManager.simState
         if (simState != TelephonyManager.SIM_STATE_READY) {
-            sendLogToApi(context, context.getString(R.string.sim_absente_ou_invalide)) { response ->
+            sendLogToApi(context.getString(R.string.sim_absente_ou_invalide)) { response ->
                 android.util.Log.d("SmsHelperApiResponse", response.toString())
             }
             return
@@ -83,18 +91,18 @@ object SmsHelper {
         context.registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(ctx: Context, intent: Intent) {
                 when (resultCode) {
-                    SmsManager.RESULT_ERROR_GENERIC_FAILURE -> sendLogToApi(ctx, ctx.getString(R.string.sms_generic_failure)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
-                    SmsManager.RESULT_ERROR_NO_SERVICE -> sendLogToApi(ctx, ctx.getString(R.string.sms_no_service)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
-                    SmsManager.RESULT_ERROR_NULL_PDU -> sendLogToApi(ctx, ctx.getString(R.string.sms_null_pdu)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
-                    SmsManager.RESULT_ERROR_RADIO_OFF -> sendLogToApi(ctx, ctx.getString(R.string.sms_radio_off)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
+                    SmsManager.RESULT_ERROR_GENERIC_FAILURE -> sendLogToApi(ctx.getString(R.string.sms_generic_failure)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
+                    SmsManager.RESULT_ERROR_NO_SERVICE -> sendLogToApi(ctx.getString(R.string.sms_no_service)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
+                    SmsManager.RESULT_ERROR_NULL_PDU -> sendLogToApi(ctx.getString(R.string.sms_null_pdu)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
+                    SmsManager.RESULT_ERROR_RADIO_OFF -> sendLogToApi(ctx.getString(R.string.sms_radio_off)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
                 }
             }
         }, IntentFilter(SMS_SENT), receiverFlag)
         context.registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(ctx: Context, intent: Intent) {
                 when (resultCode) {
-                    Activity.RESULT_OK -> sendLogToApi(ctx, ctx.getString(R.string.sms_sent_success)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
-                    Activity.RESULT_CANCELED -> sendLogToApi(ctx, ctx.getString(R.string.sms_not_delivered)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
+                    Activity.RESULT_OK -> sendLogToApi(ctx.getString(R.string.sms_sent_success)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
+                    Activity.RESULT_CANCELED -> sendLogToApi(ctx.getString(R.string.sms_not_delivered)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
                 }
             }
         }, IntentFilter(SMS_DELIVERED), receiverFlag)
@@ -118,7 +126,7 @@ object SmsHelper {
         val simState = telephonyManager.simState
         if (simState != TelephonyManager.SIM_STATE_READY) {
             val msg = context.getString(R.string.sim_absente_ou_invalide)
-            sendLogToApi(context, msg) { response ->
+            sendLogToApi(msg) { response ->
                 callback(false, response)
             }
             return
@@ -161,9 +169,11 @@ object SmsHelper {
                         sentMessage = ctx.getString(R.string.sms_radio_off)
                     }
                 }
-                if (sentResult != null && sentMessage != null) {
-                    sendLogToApi(ctx, sentMessage!!) { response ->
-                        callback(sentResult!!, response)
+                val safeResult = sentResult
+                val safeMessage = sentMessage
+                if (safeResult != null && safeMessage != null) {
+                    sendLogToApi(safeMessage) { response ->
+                        callback(safeResult, response)
                     }
                 }
             }
@@ -172,8 +182,8 @@ object SmsHelper {
         context.registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(ctx: Context, intent: Intent) {
                 when (resultCode) {
-                    Activity.RESULT_OK -> sendLogToApi(ctx, ctx.getString(R.string.sms_delivered)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
-                    Activity.RESULT_CANCELED -> sendLogToApi(ctx, ctx.getString(R.string.sms_not_delivered)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
+                    Activity.RESULT_OK -> sendLogToApi(ctx.getString(R.string.sms_delivered)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
+                    Activity.RESULT_CANCELED -> sendLogToApi(ctx.getString(R.string.sms_not_delivered)) { response -> android.util.Log.d("SmsHelperApiResponse", response.toString()) }
                 }
             }
         }, IntentFilter(SMS_DELIVERED), receiverFlag)

@@ -1,7 +1,6 @@
 package com.miseservice.smsovh.ui
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.viewModels
@@ -11,7 +10,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.miseservice.smsovh.R
 import com.miseservice.smsovh.util.SmsHelper
 import com.miseservice.smsovh.viewmodel.MainViewModel
+import com.miseservice.smsovh.ui.theme.SmsOvhTheme
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.core.net.toUri
 
 
 @AndroidEntryPoint
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     // Ouvre la page des paramètres de l'application pour accorder la permission manuellement
     private fun openAppSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.parse("package:" + packageName)
+            data = ("package:$packageName").toUri()
         }
         startActivity(intent)
     }
@@ -58,7 +59,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val viewModel: MainViewModel by viewModels()
         setContent {
-            MainScreen(viewModel)
+            SmsOvhTheme {
+                MainScreen(viewModel)
+            }
         }
     }
 }
