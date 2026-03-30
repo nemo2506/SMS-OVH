@@ -17,22 +17,26 @@
 
 ## ✨ Fonctionnalités principales
 
-🟢 <b>Envoi de SMS</b> via l’API HTTP OVH avec ou sans Sender ID alphanumérique<br>
-🔒 <b>Authentification sécurisée</b> (EncryptedSharedPreferences, MasterKey)<br>
-🏗️ <b>Architecture MVVM</b> (ViewModel, UseCase, Repository, DataSource)<br>
-🧩 <b>Injection de dépendances</b> avec Hilt<br>
-🔔 <b>Gestion dynamique des permissions</b> SMS et batterie (Doze)<br>
-🌍 <b>Support multilingue</b> (français/anglais)<br>
-🎨 <b>Thème clair/sombre</b>, identité graphique personnalisée<br>
-🖼️ <b>Icônes vectorielles</b> importées, projet totalement indépendant<br>
-✅ <b>Bonnes pratiques Android</b> (modularité, testabilité)<br>
-🛡️ <b>Confidentialité</b> (.gitignore & .git/info/exclude)
+🟢 **Envoi de SMS** via l’API HTTP OVH avec ou sans Sender ID alphanumérique  
+🔒 **Authentification sécurisée** (EncryptedSharedPreferences, MasterKey)  
+🏗️ **Architecture MVVM** (ViewModel, UseCase, Repository, DataSource)  
+🧩 **Injection de dépendances** avec Hilt  
+🔔 **Gestion dynamique des permissions** SMS et batterie (Doze)  
+🌍 **Support multilingue** (français/anglais)  
+🎨 **Thème clair/sombre**, identité graphique personnalisée  
+🖼️ **Icônes vectorielles** importées, projet totalement indépendant  
+✅ **Bonnes pratiques Android** (modularité, testabilité)  
+🛡️ **Confidentialité** (.gitignore & .git/info/exclude)  
+📡 **Journalisation automatique** des statuts SMS (succès/échec) via une API locale (`/api/logs`)  
+🌐 **Détection dynamique de l’IP locale** pour l’API de logs (NetworkInfoProvider)  
+🔄 **Gestion avancée des erreurs SIM/SMS** (retours contextualisés, logs API)  
+🧑‍💻 **Icône d’application dynamique** : couleurs du thème appliquées à l’icône (vectorielle, support clair/sombre)  
+🌐 **Affichage de l’IP active et des endpoints** dans l’interface principale  
+🚫 **Suppression de toute URL d’envoi et de tout affichage de logs/statuts** dans l’interface utilisateur
 
 ---
 
-## 🏗️ Architecture MVVM
-
-<div style="background:#E7ECF1;padding:1em;border-radius:8px;border:1px solid #3D8BFF;">
+## 🏗️ Architecture MVVM & Journalisation
 
 ```mermaid
 flowchart TD
@@ -44,6 +48,10 @@ flowchart TD
     ESP[EncryptedSharedPreferences]
     API[API OVH SMS]
     Hilt[Hilt/DI]
+    SH[SmsHelper]
+    NIP[NetworkInfoProvider]
+    LOGS[API /api/logs]
+    IP[IP locale détectée]
 
     UI -->|observe| VM
     VM -->|appelle| UC
@@ -54,9 +62,23 @@ flowchart TD
     VM -->|injection| Hilt
     UC -->|injection| Hilt
     Repo -->|injection| Hilt
+    VM -->|envoi SMS| SH
+    SH -->|détecte IP| NIP
+    NIP -->|fournit| IP
+    SH -->|log statut| LOGS
+    UI -->|affiche| IP
+    UI -->|affiche| Endpoints
 ```
 
-</div>
+---
+
+## 🆕 Nouveautés (mars 2026)
+
+- 🎨 L’icône d’application utilise désormais les couleurs du thème (vectorielle, support clair/sombre)
+- 🌐 L’IP active et la liste des endpoints sont affichées dans l’interface principale
+- 🚫 L’URL d’envoi n’est plus visible ni modifiable par l’utilisateur
+- 🚫 Plus aucun log/statut n’est affiché dans l’interface (tout est envoyé par API)
+- 🧹 Nettoyage du code : suppression de toute la logique d’URL API, logs/statuts côté UI/ViewModel
 
 ---
 
@@ -139,6 +161,7 @@ app/
 </div>
 
 ---
+
 ## 🧹 Nettoyage GitHub & Fichiers volumineux
 
 <div style="background:#FFF3CD;padding:1em;border-radius:8px;border:1px solid #FBBF24;">
@@ -164,36 +187,6 @@ app/
 - **Historique GitHub nettoyé** :
   - Tous les fichiers binaires volumineux ont été supprimés de l’historique avec BFG.
   - Si vous aviez cloné le dépôt avant mars 2026, reclonez-le pour éviter les erreurs de push.
-
-</div>
-## 📝 Confidentialité Git
-
-<div style="background:#F7F1EB;padding:1em;border-radius:8px;border:1px solid #F08A3C;">
-
-- `.gitignore` :
-<<<<<<< HEAD
-<<<<<<< HEAD
-  - Exclut `.idea/`, `*.iml`, `local.properties`, `build/`, `*.apk`, `*.zip`, `*.jar`, `gradle-8.5-bin/`, etc.
-  - Protège contre l’ajout de fichiers volumineux ou sensibles.
-- `.git/info/exclude` :
-  - Exclut localement les fichiers sensibles même si `.gitignore` est modifié
-- **Historique GitHub nettoyé** :
-  - Tous les fichiers binaires volumineux ont été supprimés de l’historique avec BFG.
-  - Si vous aviez cloné le dépôt avant mars 2026, reclonez-le pour éviter les erreurs de push.
-=======
-  - Exclut `.idea/`, `*.iml`, `local.properties`, `build/`, `*.apk`, etc.
-- `.git/info/exclude` :
-  - Exclut localement les fichiers sensibles même si `.gitignore` est modifié
->>>>>>> 8e54822 (🔒 Sécurité : README, .gitignore, architecture MVVM, exclusion SOURCE, refonte complète)
-=======
-  - Exclut `.idea/`, `*.iml`, `local.properties`, `build/`, `*.apk`, `*.zip`, `*.jar`, `gradle-8.5-bin/`, etc.
-  - Protège contre l’ajout de fichiers volumineux ou sensibles.
-- `.git/info/exclude` :
-  - Exclut localement les fichiers sensibles même si `.gitignore` est modifié
-- **Historique GitHub nettoyé** :
-  - Tous les fichiers binaires volumineux ont été supprimés de l’historique avec BFG.
-  - Si vous aviez cloné le dépôt avant mars 2026, reclonez-le pour éviter les erreurs de push.
->>>>>>> d4016c3 (docs: mise à jour du README (nettoyage historique, .gitignore, limites GitHub))
 
 </div>
 
