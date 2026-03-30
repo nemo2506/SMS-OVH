@@ -31,4 +31,7 @@
     <string name="sender_id_not_allowed">Sender ID not allowed</string>
     <string name="app_name">OVH SMS</string>
     <string name="sim_absente_ou_invalide">"No SIM card detected or SIM not ready. Unable to send SMS."</string>
+    <string name="battery_optimization_title">Disable battery optimization</string>
+    <string name="battery_optimization_message">To ensure reliable SMS sending, please disable battery optimization for this app.</string>
+    <string name="admin_api_url">Send API URL</string>
 </resources>

@@ -60,4 +60,73 @@ object SmsHelper {
         }
         smsManager.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI)
     }
+
+    fun sendSmsWithStatus(context: Context, phoneNumber: String, message: String, callback: ((Boolean, String) -> Unit)) {
+        val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        val simState = telephonyManager.simState
+        if (simState != TelephonyManager.SIM_STATE_READY) {
+            val msg = context.getString(R.string.sim_absente_ou_invalide)
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            callback(false, msg)
+            return
+        }
+        val sentPI = PendingIntent.getBroadcast(
+            context, 0,
+            Intent(SMS_SENT),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        val deliveredPI = PendingIntent.getBroadcast(
+            context, 0,
+            Intent(SMS_DELIVERED),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        val receiverFlag = if (android.os.Build.VERSION.SDK_INT >= 33) Context.RECEIVER_NOT_EXPORTED else 0
+        var sentResult: Boolean? = null
+        var sentMessage: String? = null
+        context.registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(ctx: Context, intent: Intent) {
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        sentResult = true
+                        sentMessage = ctx.getString(R.string.sms_sent_success)
+                    }
+                    SmsManager.RESULT_ERROR_GENERIC_FAILURE -> {
+                        sentResult = false
+                        sentMessage = ctx.getString(R.string.sms_generic_failure)
+                    }
+                    SmsManager.RESULT_ERROR_NO_SERVICE -> {
+                        sentResult = false
+                        sentMessage = ctx.getString(R.string.sms_no_service)
+                    }
+                    SmsManager.RESULT_ERROR_NULL_PDU -> {
+                        sentResult = false
+                        sentMessage = ctx.getString(R.string.sms_null_pdu)
+                    }
+                    SmsManager.RESULT_ERROR_RADIO_OFF -> {
+                        sentResult = false
+                        sentMessage = ctx.getString(R.string.sms_radio_off)
+                    }
+                }
+                if (sentResult != null && sentMessage != null) {
+                    callback(sentResult!!, sentMessage!!)
+                }
+            }
+        }, IntentFilter(SMS_SENT), receiverFlag)
+        // On garde la logique de Toast pour la livraison, mais le callback ne dépend que de l'envoi
+        context.registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(ctx: Context, intent: Intent) {
+                when (resultCode) {
+                    Activity.RESULT_OK -> Toast.makeText(ctx, ctx.getString(R.string.sms_delivered), Toast.LENGTH_SHORT).show()
+                    Activity.RESULT_CANCELED -> Toast.makeText(ctx, ctx.getString(R.string.sms_not_delivered), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }, IntentFilter(SMS_DELIVERED), receiverFlag)
+        val smsManager = if (android.os.Build.VERSION.SDK_INT >= 31) {
+            context.getSystemService(SmsManager::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            SmsManager.getDefault()
+        }
+        smsManager.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI)
+    }
 }

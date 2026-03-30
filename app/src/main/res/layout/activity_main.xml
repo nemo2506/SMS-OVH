@@ -265,10 +265,111 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                    android:text="@string/info_sender_id"
+                android:text="@string/info_sender_id"
                 android:textSize="12sp"
                 android:textColor="@color/smsovh_on_dark"
                 android:lineSpacingExtra="3dp"/>
+        </LinearLayout>
+
+        <!-- SÉPARATEUR AVANT API URL ADMIN -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"/>
+
+        <!-- ══ API URL ADMIN ══════════════════════════════════════════════════ -->
+        <LinearLayout
+            android:id="@+id/layoutApiUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_info"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tvApiUrlLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/admin_api_url"
+                android:textSize="13sp"
+                android:textColor="@color/smsovh_primary"
+                android:layout_marginEnd="6dp"/>
+
+            <EditText
+                android:id="@+id/etApiUrl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="textUri"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:background="@android:color/transparent"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:paddingEnd="8dp"/>
+
+            <Button
+                android:id="@+id/btnSaveApiUrl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OK"
+                android:textSize="12sp"
+                android:backgroundTint="@color/smsovh_primary"
+                android:textColor="@color/white"
+                style="@style/Widget.MaterialComponents.Button"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"/>
+        </LinearLayout>
+
+        <!-- ══ API TOKEN ════════════════════════════════════════════════════════ -->
+        <LinearLayout
+            android:id="@+id/layoutApiToken"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_info"
+            android:padding="12dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/tvApiTokenLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Token API : "
+                android:textSize="13sp"
+                android:textColor="@color/smsovh_primary"
+                android:layout_marginEnd="6dp"/>
+
+            <TextView
+                android:id="@+id/tvApiToken"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="token"
+                android:textSize="13sp"
+                android:textColor="@color/text_primary"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingEnd="8dp"/>
+
+            <Button
+                android:id="@+id/btnCopyToken"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Copier"
+                android:textSize="12sp"
+                android:backgroundTint="@color/smsovh_primary"
+                android:textColor="@color/white"
+                style="@style/Widget.MaterialComponents.Button"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"/>
         </LinearLayout>
 
     </LinearLayout>
