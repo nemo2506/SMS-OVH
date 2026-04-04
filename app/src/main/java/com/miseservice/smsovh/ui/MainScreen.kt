@@ -243,9 +243,8 @@ fun MainScreen(
                 locationPermissionGranted = locationPermissionGranted,
                 locationData = locationData,
                 onRestPortInputChange = { viewModel.setRestPortInput(it) },
-                onRestPortCommit = { isValidPort ->
-                    viewModel.commitRestPort()
-                    if (isValidPort) {
+                onRestPortCommit = {
+                    if (viewModel.commitRestPort()) {
                         focusManager.clearFocus()
                     }
                 },

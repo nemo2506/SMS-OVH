@@ -206,23 +206,18 @@ class MainViewModel @Inject constructor(
 
         _uiState.value = _uiState.value.copy(
             restPortInput = trimmed,
-            restPort = parsed ?: _uiState.value.restPort,
             restPortError = error
         )
-
-        if (parsed != null) {
-            schedulePersistCurrentSettings()
-        }
     }
 
-    fun commitRestPort() {
+    fun commitRestPort(): Boolean {
         val port = parsePortOrNull(_uiState.value.restPortInput)
         if (port == null) {
             _uiState.value = _uiState.value.copy(
                 restPortError = context.getString(R.string.rest_port_invalid),
                 restPortInput = _uiState.value.restPort.toString()
             )
-            return
+            return false
         }
 
         viewModelScope.launch {
@@ -234,6 +229,7 @@ class MainViewModel @Inject constructor(
             restPortError = null
         )
         schedulePersistCurrentSettings()
+        return true
     }
 
     fun setServiceActive(active: Boolean) {

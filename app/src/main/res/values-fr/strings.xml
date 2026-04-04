@@ -31,7 +31,7 @@
     <string name="sender_id_not_allowed">Sender ID non autorisé</string>
     <string name="app_name">OVH SMS</string>
     <string name="sim_absente_ou_invalide">"Aucune carte SIM détectée ou SIM non prête. Impossible d'envoyer le SMS."</string>
-    <string name="token_copied">Token copié dans le presse-papiers</string>
+    <string name="token_copied">Token copié</string>
     <string name="api_network_info_title">INFORMATIONS API &amp; RÉSEAU</string>
     <string name="network_not_connected">Non connectée</string>
     <string name="connected_ip_label">IP connectée</string>
