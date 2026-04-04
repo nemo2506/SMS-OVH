@@ -36,30 +36,35 @@
 
 ```mermaid
 flowchart TD
-    UI[UI Compose\nMainActivity/MainScreen]
-    VM[MainViewModel\nStateFlow UiState]
-    UC[UseCases\nSendRestMessage / GetSettings / UpdatePort]
+    UI[UI Compose\nMainActivity / MainScreen]
+    STATE[MainUiState\nStateFlow]
+    VM[MainViewModel]
+    UC[UseCases\nSendRestMessage / SendMessage\nGetSettings / UpdateRestPort]
     REPO[Repositories\nSms / Settings / Network]
-    ROOM[(Room DB\nSettingsDao + LogDao)]
-    SEC[EncryptedSharedPreferences\nToken + secrets]
+    ROOM[(Room\nAppDatabase\nSettingsDao + LogDao)]
+    SEC[EncryptedSharedPreferences\nToken API + secrets]
+    CTRL[ServiceControlManager]
     FG[SmsOvhForegroundService]
-    REST[SmsRestServer\n/api/send-message\n/api/logs]
+    REST[SmsRestServer\n/api/send-message\n/api/send-sms\n/api/send-mms\n/api/logs\n/api/health]
     SMS[SmsHelper / SmsManager]
-    API[API OVH SMS]
+    OVH[API OVH SMS]
 
-    UI -->|actions utilisateur| VM
+    UI -->|intentions utilisateur| VM
+    VM -->|publie| STATE
+    STATE -->|rendu UI| UI
+
     VM -->|orchestration| UC
     UC -->|abstraction métier| REPO
-    REPO -->|persistance| ROOM
-    REPO -->|secrets| SEC
-    REPO -->|envoi SMS/MMS| SMS
-    SMS -->|envoi distant| API
+    REPO -->|lecture/écriture| ROOM
+    REPO -->|accès secrets| SEC
+    REPO -->|envoi local SMS/MMS| SMS
+    SMS -->|transport distant| OVH
 
-    FG -->|héberge| REST
-    REST -->|invoke| UC
-    REST -->|retour JSON| UI
-    REST -->|journalisation| ROOM
-    VM -->|observe settings/logs| ROOM
+    VM -->|start/stop service| CTRL
+    CTRL --> FG
+    FG -->|héberge serveur local| REST
+    REST -->|appels internes| UC
+    REST -->|journalisation API| ROOM
 ```
 
 
