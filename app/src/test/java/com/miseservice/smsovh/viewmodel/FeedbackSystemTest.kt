@@ -63,7 +63,7 @@ class FeedbackSystemTest {
 
         // Vérifier que les autres champs sont conservés
         assertEquals("L'ID doit être conservé", "TEST", newState.senderId)
-        assertEquals("Le destinataire doit être conservé", "+33612345678", newState.recipient)
+        assertEquals("Le recipient doit être conservé", "+33612345678", newState.recipient)
     }
 
     @Test
@@ -88,8 +88,7 @@ class FeedbackSystemTest {
         val successDuration = 3000L  // 3 secondes pour succès
         val errorDuration = 5000L    // 5 secondes pour erreur
 
-        assertTrue("L'erreur doit afficher plus longtemps que le succès",
-                   errorDuration > successDuration)
+        assertEquals("La durée d'erreur doit être de 5 secondes", 5000L, errorDuration)
         assertEquals("Différence doit être de 2 secondes", 2000L, errorDuration - successDuration)
     }
 
@@ -120,7 +119,7 @@ class FeedbackSystemTest {
 
         val errorMessages = listOf(
             "❌ Erreur: Numéro invalide",
-            "❌ Erreur: destinataire ou texte manquants"
+            "❌ Erreur: recipient ou texte manquants"
         )
 
         successMessages.forEach { msg ->

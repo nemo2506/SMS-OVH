@@ -50,7 +50,7 @@ class RestServerFeedbackSystemTest {
     fun testErrorMessageFormat() {
         val messages = listOf(
             "❌ Erreur: Numéro invalide",
-            "❌ Erreur: destinataire ou texte manquants",
+            "❌ Erreur: recipient ou texte manquants",
             "❌ Erreur: Authentification échouée"
         )
 

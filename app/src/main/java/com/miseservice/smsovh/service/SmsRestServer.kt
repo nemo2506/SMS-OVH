@@ -41,6 +41,10 @@ class SmsRestServer @Inject constructor(
         return if (args.isEmpty()) context.getString(resId) else context.getString(resId, *args)
     }
 
+    private fun extractRecipient(json: JSONObject): String {
+        return json.optString("recipient", "").trim()
+    }
+
     @Volatile
     private var serverStarted = false
 
@@ -261,7 +265,7 @@ class SmsRestServer @Inject constructor(
         try {
             val json = JSONObject(body)
             val senderId = json.optString("senderId", "").ifBlank { null }
-            val destinataire = json.optString("destinataire", "").trim()
+            val recipient = extractRecipient(json)
             val text = json.optString("text", "").trim()
             val base64Jpeg = if (json.has("base64Jpeg") && !json.isNull("base64Jpeg")) {
                 json.getString("base64Jpeg")
@@ -270,7 +274,7 @@ class SmsRestServer @Inject constructor(
             }
 
             // Valide les champs
-            if (destinataire.isBlank() || text.isBlank()) {
+            if (recipient.isBlank() || text.isBlank()) {
                 emitEvent(
                     RestServerEventType.SMS_SENT_ERROR,
                     string(R.string.feedback_error_with_message, string(R.string.rest_server_missing_destinataire_or_text_log_message))
@@ -279,13 +283,13 @@ class SmsRestServer @Inject constructor(
             }
 
             // Valide et formate le numéro
-            val normalizedNumber = PhoneNumberValidator.normalize(destinataire)
+            val normalizedNumber = PhoneNumberValidator.normalize(recipient)
                 ?: run {
                     emitEvent(
                         RestServerEventType.SMS_SENT_ERROR,
-                        string(R.string.feedback_error_with_message, string(R.string.rest_server_invalid_phone_number_log_message, destinataire))
+                        string(R.string.feedback_error_with_message, string(R.string.rest_server_invalid_phone_number_log_message, recipient))
                     )
-                    return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.invalid_phone_number_message, destinataire), 400)
+                    return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.invalid_phone_number_message, recipient), 400)
                 }
 
             val request = SendMessageRequest(senderId, normalizedNumber, text, base64Jpeg)
@@ -325,14 +329,14 @@ class SmsRestServer @Inject constructor(
         try {
             val json = JSONObject(body)
             val senderId = json.optString("senderId", "").ifBlank { null }
-            val destinataire = json.optString("destinataire", "").trim()
+            val recipient = extractRecipient(json)
             val text = json.optString("text", "").trim()
 
-            if (destinataire.isBlank() || text.isBlank()) {
+            if (recipient.isBlank() || text.isBlank()) {
                 return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_destinataire_or_text_message), 400)
             }
 
-            val normalizedNumber = PhoneNumberValidator.normalize(destinataire)
+            val normalizedNumber = PhoneNumberValidator.normalize(recipient)
                 ?: return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.rest_server_invalid_phone_number_simple_message), 400)
 
             // Vérifie la longueur du SMS
@@ -369,15 +373,15 @@ class SmsRestServer @Inject constructor(
         try {
             val json = JSONObject(body)
             val senderId = json.optString("senderId", "").ifBlank { null }
-            val destinataire = json.optString("destinataire", "").trim()
+            val recipient = extractRecipient(json)
             val text = json.optString("text", "").trim()
             val base64Jpeg = json.optString("base64Jpeg", "").ifBlank { null }
 
-            if (destinataire.isBlank() || base64Jpeg.isNullOrBlank()) {
+            if (recipient.isBlank() || base64Jpeg.isNullOrBlank()) {
                 return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_destinataire_or_image_message), 400)
             }
 
-            val normalizedNumber = PhoneNumberValidator.normalize(destinataire)
+            val normalizedNumber = PhoneNumberValidator.normalize(recipient)
                 ?: return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.invalid_phone_number_message), 400)
 
             val request = SendMessageRequest(senderId, normalizedNumber, text, base64Jpeg)

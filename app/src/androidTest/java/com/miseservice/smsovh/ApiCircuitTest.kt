@@ -68,7 +68,7 @@ class ApiCircuitTest {
     fun testSendSmsBasic(): Boolean {
         val json = JSONObject()
             .put("senderId", "TestApp")
-            .put("destinataire", TEST_PHONE)
+            .put("recipient", TEST_PHONE)
             .put("text", TEST_MESSAGE)
 
         val request = Request.Builder()
@@ -88,7 +88,7 @@ class ApiCircuitTest {
     fun testSendSmsWithValidation(): Boolean {
         val json = JSONObject()
             .put("senderId", "TestApp")
-            .put("destinataire", "abc123")
+            .put("recipient", "abc123")
             .put("text", TEST_MESSAGE)
 
         val request = Request.Builder()
@@ -106,7 +106,7 @@ class ApiCircuitTest {
 
         val json = JSONObject()
             .put("senderId", "TestApp")
-            .put("destinataire", TEST_PHONE)
+            .put("recipient", TEST_PHONE)
             .put("text", "Test MMS")
             .put("base64Jpeg", base64Image)
 
@@ -127,7 +127,7 @@ class ApiCircuitTest {
     fun testSendMessageAutoRoute(): Boolean {
         val json = JSONObject()
             .put("senderId", "TestApp")
-            .put("destinataire", TEST_PHONE)
+            .put("recipient", TEST_PHONE)
             .put("text", TEST_MESSAGE)
 
         val request = Request.Builder()

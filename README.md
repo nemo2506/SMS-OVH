@@ -168,9 +168,9 @@ app/
 
 | Methode | Endpoint | Description | Body JSON |
 |---|---|---|---|
-| `POST` | `/api/send-message` | Envoi intelligent SMS/MMS selon presence de `base64Jpeg` | `senderId?`, `destinataire`, `text`, `base64Jpeg?` |
-| `POST` | `/api/send-sms` | Envoi SMS texte | `senderId?`, `destinataire`, `text` |
-| `POST` | `/api/send-mms` | Envoi MMS avec image | `senderId?`, `destinataire`, `text?`, `base64Jpeg` |
+| `POST` | `/api/send-message` | Envoi intelligent SMS/MMS selon presence de `base64Jpeg` | `senderId?`, `recipient`, `text`, `base64Jpeg?` |
+| `POST` | `/api/send-sms` | Envoi SMS texte | `senderId?`, `recipient`, `text` |
+| `POST` | `/api/send-mms` | Envoi MMS avec image | `senderId?`, `recipient`, `text?`, `base64Jpeg` |
 | `GET` | `/api/logs` | Retourne les 5 derniers logs persistés | Aucun |
 | `POST` | `/api/logs` | Ajoute un log applicatif | `message` |
 | `GET` | `/api/health` | Vérifie l'état du serveur REST local | Aucun |
@@ -179,7 +179,7 @@ app/
 ### Exemples de requêtes
 
 ```bash
-curl -X POST "http://<IP_DU_TELEPHONE>:<PORT>/api/send-message" -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN_API>" -d "{\"senderId\":\"MYBRAND\",\"destinataire\":\"+33612345678\",\"text\":\"Test REST\",\"base64Jpeg\":\"\"}"
+curl -X POST "http://<IP_DU_TELEPHONE>:<PORT>/api/send-message" -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN_API>" -d "{\"senderId\":\"MYBRAND\",\"recipient\":\"+33612345678\",\"text\":\"Test REST\",\"base64Jpeg\":\"\"}"
 curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/logs" -H "Authorization: Bearer <TOKEN_API>"
 curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/health" -H "Authorization: Bearer <TOKEN_API>"
 curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/battery" -H "Authorization: Bearer <TOKEN_API>"
@@ -222,7 +222,7 @@ Réponse dédiée `/api/battery` (`200`):
 
 ### Regles de validation importantes
 
-- `destinataire` est obligatoire pour les envois SMS/MMS et est normalisé avant envoi.
+- `recipient` est obligatoire pour les envois SMS/MMS et est normalisé avant envoi.
 - `text` est obligatoire pour `/api/send-message` et `/api/send-sms`.
 - `base64Jpeg` est obligatoire pour `/api/send-mms`.
 - En cas d'erreur de validation, l'API renvoie un JSON d'erreur (jamais de HTML).
@@ -247,7 +247,7 @@ with open("image.jpg", "rb") as f:
 
 payload = {
     "senderId": "MYBRAND",
-    "destinataire": "+33612345678",
+    "recipient": "+33612345678",
     "text": "MMS test",
     "base64Jpeg": base64_jpeg
 }
@@ -262,7 +262,7 @@ $base64Jpeg = base64_encode($bytes);
 
 $payload = [
     'senderId' => 'MYBRAND',
-    'destinataire' => '+33612345678',
+    'recipient' => '+33612345678',
     'text' => 'MMS test',
     'base64Jpeg' => $base64Jpeg,
 ];
@@ -279,7 +279,7 @@ val base64Jpeg = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
 
 val payload = mapOf(
     "senderId" to "MYBRAND",
-    "destinataire" to "+33612345678",
+    "recipient" to "+33612345678",
     "text" to "MMS test",
     "base64Jpeg" to base64Jpeg
 )

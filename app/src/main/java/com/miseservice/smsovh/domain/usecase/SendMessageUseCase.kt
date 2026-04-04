@@ -12,7 +12,7 @@ class SendMessageUseCase @Inject constructor(private val repository: SmsReposito
             repository.sendSms(
                 SmsMessage(
                     from = request.senderId ?: "",
-                    to = request.destinataire,
+                    to = request.recipient,
                     message = request.text
                 )
             )

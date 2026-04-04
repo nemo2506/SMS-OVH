@@ -104,14 +104,14 @@ object SmsUsageExamples {
         val url = "http://${NetworkInfoProvider.getHostIp()}:${NetworkInfoProvider.getApiPort()}/api/send-sms"
         val json = org.json.JSONObject().apply {
             put("senderId", "MonApp")
-            put("destinataire", "+33612345678")
+            put("recipient", "+33612345678")
             put("text", "Message via API REST")
         }
 
         val requestBody = json.toString()
             .toRequestBody("application/json".toMediaType())
 
-        val request = okhttp3.Request.Builder()
+        okhttp3.Request.Builder()
             .url(url)
             .addHeader("Authorization", "Bearer token123")
             .post(requestBody)
@@ -123,7 +123,7 @@ object SmsUsageExamples {
         val url = "http://${NetworkInfoProvider.getHostIp()}:${NetworkInfoProvider.getApiPort()}/api/send-mms"
         val json = org.json.JSONObject()
         json.put("senderId", "MonApp")
-        json.put("destinataire", "+33612345678")
+        json.put("recipient", "+33612345678")
         json.put("text", "Message avec image")
         json.put("base64Jpeg", base64Image)
         okhttp3.Request.Builder().url(url).post(json.toString().toRequestBody("application/json".toMediaType())).build()

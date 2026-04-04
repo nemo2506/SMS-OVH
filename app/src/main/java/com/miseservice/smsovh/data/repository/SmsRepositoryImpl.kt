@@ -116,7 +116,7 @@ class SmsRepositoryImpl @Inject constructor(
      * Envoie un MMS via SmsHelper (envoi direct natif).
      */
     override suspend fun sendMms(request: SendMessageRequest): SendResult {
-        if (request.destinataire.isBlank()) {
+        if (request.recipient.isBlank()) {
             return SendResult.Error(400, "Destinataire manquant")
         }
 
@@ -127,7 +127,7 @@ class SmsRepositoryImpl @Inject constructor(
         return suspendCancellableCoroutine { cont ->
             SmsHelper.sendMmsWithStatus(
                 context,
-                request.destinataire,
+                request.recipient,
                 request.text,
                 request.base64Jpeg,
                 request.senderId
