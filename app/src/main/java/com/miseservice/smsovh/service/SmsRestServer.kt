@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import android.util.Log
 import com.miseservice.smsovh.domain.usecase.SendRestMessageUseCase
 import com.miseservice.smsovh.model.SendMessageRequest
 import com.miseservice.smsovh.model.SendResult
@@ -34,7 +33,6 @@ class SmsRestServer @Inject constructor(
     @Named("restPort") port: Int = 8080
 ) : NanoHTTPD(port) {
     private companion object {
-        const val TAG = "SmsRestServer"
         const val API_VERSION = "1.0"
     }
 
@@ -61,20 +59,17 @@ class SmsRestServer @Inject constructor(
             server.start()
             activeServer = server
             serverStarted = true
-            Log.i(TAG, "SMS REST Server demarre sur le port $currentPort")
             emitEvent(RestServerEventType.SERVER_START_SUCCESS, "Serveur REST demarre sur le port $currentPort")
             true
-        } catch (e: BindException) {
+        } catch (_: BindException) {
             activeServer = null
             serverStarted = false
-            Log.e(TAG, "Port $currentPort deja utilise (EADDRINUSE)", e)
             emitEvent(RestServerEventType.SERVER_PORT_IN_USE, "Port $currentPort deja utilise")
             false
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             activeServer = null
             serverStarted = false
-            Log.e(TAG, "Echec du demarrage serveur sur le port $currentPort", e)
-            emitEvent(RestServerEventType.SERVER_START_ERROR, "Echec demarrage serveur: ${e.message}")
+            emitEvent(RestServerEventType.SERVER_START_ERROR, "Echec demarrage serveur")
             false
         }
     }
@@ -85,7 +80,6 @@ class SmsRestServer @Inject constructor(
         runCatching { activeServer?.stop() }
         activeServer = null
         serverStarted = false
-        Log.i(TAG, "SMS REST Server arrete")
     }
 
     @Synchronized
@@ -177,7 +171,6 @@ class SmsRestServer @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Erreur non gérée dans serve()", e)
             saveApiLog("❌ Internal server error: ${e.message}")
             return createErrorResponse(Response.Status.INTERNAL_ERROR, "Internal server error: ${e.message}")
         }
@@ -224,7 +217,6 @@ class SmsRestServer @Inject constructor(
 
             newFixedLengthResponse(Response.Status.OK, "application/json", json.toString())
         } catch (e: Exception) {
-            Log.e(TAG, "Erreur handleBatteryStatus", e)
             createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
         }
     }
@@ -276,7 +268,6 @@ class SmsRestServer @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Erreur handleSendMessage", e)
             val eventMessage = "❌ Erreur: ${e.message}"
             emitEvent(RestServerEventType.SMS_SENT_ERROR, eventMessage)
             saveApiLog(eventMessage)
@@ -300,8 +291,6 @@ class SmsRestServer @Inject constructor(
 
             // Vérifie la longueur du SMS
             val partCount = OvhSmsConfig.calculateSmsPartCount(text)
-            Log.d(TAG, "SMS: $partCount partie(s) - ${text.length} caractères")
-
             val request = SendMessageRequest(senderId, normalizedNumber, text, null)
             val result = runBlocking { sendRestMessageUseCase(request) }
 
@@ -324,7 +313,6 @@ class SmsRestServer @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Erreur handleSendSms", e)
             val eventMessage = "❌ Erreur: ${e.message}"
             saveApiLog(eventMessage)
             return createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
@@ -345,8 +333,6 @@ class SmsRestServer @Inject constructor(
 
             val normalizedNumber = PhoneNumberValidator.normalize(destinataire)
                 ?: return createErrorResponse(Response.Status.BAD_REQUEST, "Invalid phone number", 400)
-
-            Log.d(TAG, "MMS: image ${base64Jpeg.length} caractères base64")
 
             val request = SendMessageRequest(senderId, normalizedNumber, text, base64Jpeg)
             val result = runBlocking { sendRestMessageUseCase(request) }
@@ -369,7 +355,6 @@ class SmsRestServer @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Erreur handleSendMms", e)
             val eventMessage = "❌ Erreur: ${e.message}"
             saveApiLog(eventMessage)
             return createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
@@ -398,7 +383,6 @@ class SmsRestServer @Inject constructor(
             }
             newFixedLengthResponse(Response.Status.OK, "application/json", json.toString())
         } catch (e: Exception) {
-            Log.e(TAG, "Erreur handleGetLogs", e)
             createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
         }
     }
@@ -419,7 +403,6 @@ class SmsRestServer @Inject constructor(
 
             return createSuccessResponse("Log enregistré", mapOf("message" to message))
         } catch (e: Exception) {
-            Log.e(TAG, "Erreur handleLogMessage", e)
             emitEvent(RestServerEventType.LOG_RECEIVED_ERROR, "❌ ${e.message}")
             return createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
         }
@@ -452,8 +435,7 @@ class SmsRestServer @Inject constructor(
             runBlocking {
                 restServerEventManager.emitEvent(RestServerEvent(type, message))
             }
-        } catch (e: Exception) {
-            Log.w(TAG, "Erreur lors de l'émission d'événement", e)
+        } catch (_: Exception) {
         }
     }
 
@@ -463,8 +445,6 @@ class SmsRestServer @Inject constructor(
                 logDao.insertLog(com.miseservice.smsovh.data.local.LogEntity(message = message))
                 logDao.deleteOldLogs()
             }
-        }.onFailure { error ->
-            Log.w(TAG, "Erreur sauvegarde log API", error)
-        }
+        }.onFailure { }
     }
 }

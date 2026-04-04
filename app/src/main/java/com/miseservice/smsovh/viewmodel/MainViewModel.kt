@@ -75,7 +75,7 @@ class MainViewModel @Inject constructor(
             applyServiceActiveState(currentSettings.serviceActive)
         }.onFailure { error ->
             _uiState.value = _uiState.value.copy(
-                feedbackMessage = "❌ Service indisponible: ${error.message}",
+                feedbackMessage = context.getString(R.string.service_unavailable_message, error.message.orEmpty()),
                 feedbackType = FeedbackType.ERROR
             )
         }
@@ -307,7 +307,10 @@ class MainViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     serviceToggleTargetActive = null,
-                    feedbackMessage = "❌ Impossible de ${if (active) "démarrer" else "arrêter"} le service: ${error.message}",
+                    feedbackMessage = context.getString(
+                        if (active) R.string.service_start_failed_message else R.string.service_stop_failed_message,
+                        error.message.orEmpty()
+                    ),
                     feedbackType = FeedbackType.ERROR
                 )
             }
@@ -340,7 +343,7 @@ class MainViewModel @Inject constructor(
                 is SendResult.Success -> {
                     _uiState.value = _uiState.value.copy(
                         message = "",
-                        feedbackMessage = "✅ SMS envoyé avec succès",
+                        feedbackMessage = context.getString(R.string.sms_sent_success),
                             feedbackType = FeedbackType.SUCCESS
                     )
                     delay(4000)
@@ -348,7 +351,7 @@ class MainViewModel @Inject constructor(
                 }
                 is SendResult.Error -> {
                     _uiState.value = _uiState.value.copy(
-                        feedbackMessage = "❌ ${result.message}",
+                        feedbackMessage = context.getString(R.string.feedback_error_with_message, result.message),
                             feedbackType = FeedbackType.ERROR
                     )
                     delay(5000)

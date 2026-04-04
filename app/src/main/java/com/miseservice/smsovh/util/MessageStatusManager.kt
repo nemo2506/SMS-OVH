@@ -5,8 +5,6 @@ import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import android.util.Log
-import org.json.JSONObject
 
 /**
  * Événement de status de message
@@ -22,22 +20,20 @@ data class MessageStatusEvent(
 /**
  * Statuts possibles d'un message
  */
+@Suppress("unused")
 enum class MessageStatus {
-    PENDING,       // En attente d'envoi
     SENT,          // Envoyé
     DELIVERED,     // Livré au destinataire
     FAILED,        // Échec d'envoi
-    RECEIVED,      // Message reçu
-    UNKNOWN        // Statut inconnu
 }
 
 /**
  * Gestionnaire des statuts de messages SMS/MMS
  * Écoute les broadcasts du système pour suivre l'état des messages
  */
+@Suppress("unused")
 class MessageStatusManager(private val context: Context) {
     private companion object {
-        const val TAG = "MessageStatusManager"
         const val SMS_SENT_ACTION = "SMS_SENT"
         const val SMS_DELIVERED_ACTION = "SMS_DELIVERED"
     }
@@ -85,7 +81,6 @@ class MessageStatusManager(private val context: Context) {
                     }
                     
                     statusCallbacks[messageId]?.invoke(event)
-                    Log.d(TAG, "SMS sent status: $event")
                 }
             }
 
@@ -105,7 +100,6 @@ class MessageStatusManager(private val context: Context) {
                     }
                     
                     statusCallbacks[messageId]?.invoke(event)
-                    Log.d(TAG, "SMS delivered status: $event")
                 }
             }
 
@@ -115,9 +109,7 @@ class MessageStatusManager(private val context: Context) {
             context.registerReceiver(deliveredReceiver, IntentFilter(SMS_DELIVERED_ACTION), receiverFlag)
             
             isRegistered = true
-            Log.d(TAG, "MessageStatusManager receivers registered")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to register status receivers", e)
+        } catch (_: Exception) {
         }
     }
 
@@ -134,23 +126,9 @@ class MessageStatusManager(private val context: Context) {
             }
             isRegistered = false
             statusCallbacks.clear()
-            Log.d(TAG, "MessageStatusManager cleaned up")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error during cleanup", e)
+        } catch (_: Exception) {
         }
     }
 
-    /**
-     * Convertit un MessageStatusEvent en JSON pour l'API
-     */
-    fun eventToJson(event: MessageStatusEvent): JSONObject {
-        return JSONObject().apply {
-            put("messageId", event.messageId)
-            put("phoneNumber", event.phoneNumber)
-            put("status", event.status.name)
-            put("timestamp", event.timestamp)
-            put("details", event.details)
-        }
-    }
 }
 

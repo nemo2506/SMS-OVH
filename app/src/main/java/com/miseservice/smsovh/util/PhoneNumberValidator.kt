@@ -1,12 +1,10 @@
 package com.miseservice.smsovh.util
 
-import android.util.Log
-
 /**
  * Utilitaire pour la validation et le formatage des numéros de téléphone
  */
+@Suppress("unused")
 object PhoneNumberValidator {
-    private const val TAG = "PhoneNumberValidator"
 
     /**
      * Régex pour valider un numéro de téléphone international
@@ -61,20 +59,11 @@ object PhoneNumberValidator {
     }
 
     /**
-     * Nettoie un numéro (supprime espaces, tirets, etc.)
-     */
-    fun clean(phoneNumber: String): String {
-        return phoneNumber.replace(Regex("[^0-9+]"), "")
-    }
-
-    /**
      * Extrait le code pays du numéro
      */
     fun getCountryCode(phoneNumber: String): String? {
         val formatted = formatToInternational(phoneNumber) ?: return null
-        val parts = formatted.substring(1).split(Regex("[^0-9]"))
-        
-        for ((code, country) in COUNTRY_PREFIXES) {
+        for ((code, _) in COUNTRY_PREFIXES) {
             if (formatted.startsWith("+$code")) {
                 return code
             }
@@ -108,12 +97,6 @@ object PhoneNumberValidator {
         return Pair(valid, invalid)
     }
 
-    /**
-     * Formate une liste de numéros
-     */
-    fun formatBatch(phoneNumbers: List<String>, defaultCountryCode: String = "33"): List<String> {
-        return phoneNumbers.mapNotNull { formatToInternational(it, defaultCountryCode) }
-    }
 
     /**
      * Normalise un numéro (valide + formate)

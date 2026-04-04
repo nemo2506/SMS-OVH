@@ -1,14 +1,10 @@
 package com.miseservice.smsovh.util
 
-import android.util.Log
-
 /**
  * Configuration OVH pour l'envoi de SMS et MMS
  * Contient tous les paramètres spécifiques à OVH
  */
 object OvhSmsConfig {
-    private const val TAG = "OvhSmsConfig"
-
     /**
      * Paramètres transport locaux (sans dépendance à une librairie externe).
      */
@@ -146,19 +142,8 @@ object OvhSmsConfig {
     }
 
     /**
-     * Affiche les paramètres OVH dans les logs
+     * Conserve l'API publique sans journalisation.
      */
     fun logConfiguration() {
-        Log.i(TAG, """
-            ========== Configuration OVH SMS/MMS ==========
-            MMSC URL: ${Mmsc.URL}
-            MMSC Proxy: ${Mmsc.PROXY}:${Mmsc.PORT}
-            APN: ${Apn.NAME}
-            Rapports de livraison: ${DeliveryReports.ENABLED}
-            Limite SMS: ${Limits.SMS_CHAR_LIMIT} caractères
-            Limite SMS Unicode: ${Limits.SMS_CHAR_LIMIT_WITH_UNICODE} caractères
-            Limite MMS: ${Limits.MMS_SIZE_LIMIT_MB}MB
-            =============================================
-        """.trimIndent())
     }
 }

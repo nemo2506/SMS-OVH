@@ -8,7 +8,6 @@ import android.content.IntentFilter
 import android.os.Build
 import android.telephony.SmsManager
 import android.telephony.TelephonyManager
-import android.util.Log
 import com.miseservice.smsovh.domain.repository.SmsRepository
 import com.miseservice.smsovh.model.SmsMessage
 import com.miseservice.smsovh.model.SendResult
@@ -26,7 +25,6 @@ class SmsRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : SmsRepository {
     private companion object {
-        const val TAG = "SmsRepositoryImpl"
         const val SMS_SENT = "SMS_SENT"
     }
 
@@ -82,7 +80,6 @@ class SmsRepositoryImpl @Inject constructor(
                     try {
                         when (resultCode) {
                             Activity.RESULT_OK -> {
-                                Log.d(TAG, "SMS envoyé vers ${sms.to}")
                                 if (cont.isActive) cont.resume(SendResult.Success)
                             }
                             SmsManager.RESULT_ERROR_GENERIC_FAILURE -> if (cont.isActive) cont.resume(SendResult.Error(500, "Echec generique"))
@@ -110,7 +107,6 @@ class SmsRepositoryImpl @Inject constructor(
                 runCatching { context.unregisterReceiver(sentReceiver) }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Erreur envoi SMS natif", e)
             val code = if (e.message?.contains("SmsManager indisponible", ignoreCase = true) == true) 503 else 500
             if (cont.isActive) cont.resume(SendResult.Error(code, "Erreur: ${e.message}"))
         }

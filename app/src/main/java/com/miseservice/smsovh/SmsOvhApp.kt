@@ -1,7 +1,6 @@
 package com.miseservice.smsovh
 
 import android.app.Application
-import android.util.Log
 import com.miseservice.smsovh.data.repository.SettingsRepository
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.android.EntryPointAccessors
@@ -14,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.collect
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -26,10 +24,6 @@ interface SmsRestServerEntryPoint {
 @HiltAndroidApp
 class SmsOvhApp : Application() {
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-    private companion object {
-        const val TAG = "SmsOvhApp"
-    }
 
     override fun onCreate() {
         super.onCreate()
@@ -45,8 +39,7 @@ class SmsOvhApp : Application() {
             // Initialisation réseau best-effort: ne jamais bloquer le démarrage de l'app.
             try {
                 com.miseservice.smsovh.util.NetworkInfoProvider.init(this)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } catch (_: Exception) {
             }
 
             smsRestServer.updatePort(initialPort)
@@ -69,8 +62,7 @@ class SmsOvhApp : Application() {
                     }
                 }
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Erreur au demarrage application", e)
+        } catch (_: Exception) {
         }
     }
 }

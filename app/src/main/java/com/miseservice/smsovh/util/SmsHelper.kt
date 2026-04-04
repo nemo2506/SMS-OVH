@@ -15,7 +15,6 @@ import android.os.Handler
 import android.os.Looper
 import android.telephony.SmsManager
 import android.util.Base64
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.google.android.mms.ContentType
@@ -34,8 +33,6 @@ import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
 
 object SmsHelper {
-    private const val TAG = "SmsHelper"
-
     private fun string(context: Context, resId: Int, vararg args: Any): String {
         return if (args.isEmpty()) context.getString(resId) else context.getString(resId, *args)
     }
@@ -163,7 +160,7 @@ object SmsHelper {
 
             fun cleanup() {
                 runCatching { receiver?.let { context.unregisterReceiver(it) } }
-                runCatching { pduFile?.delete() }
+                pduFile?.let { runCatching { it.delete() } }
                 runCatching {
                     if (networkBound) {
                         connectivityManager?.bindProcessToNetwork(null)
@@ -238,7 +235,6 @@ object SmsHelper {
                             networkBound = false
                         }
                     }
-                    Log.d(TAG, string(context, R.string.smshelper_mms_triggered_log, phoneNumber, imageBytes.size))
                 } catch (e: Exception) {
                     complete(
                         false,
@@ -289,7 +285,6 @@ object SmsHelper {
         } catch (e: IllegalArgumentException) {
             runCatching { receiver?.let { context.unregisterReceiver(it) } }
             runCatching { pduFile?.delete() }
-            Log.e(TAG, string(context, R.string.smshelper_invalid_param, e.message ?: ""), e)
             callback(
                 false,
                 JSONObject().apply {
@@ -302,7 +297,6 @@ object SmsHelper {
         } catch (e: Exception) {
             runCatching { receiver?.let { context.unregisterReceiver(it) } }
             runCatching { pduFile?.delete() }
-            Log.e(TAG, string(context, R.string.smshelper_mms_error, e.message ?: ""), e)
             callback(
                 false,
                 JSONObject().apply {
@@ -355,7 +349,6 @@ object SmsHelper {
                 }
             )
         } catch (e: Exception) {
-            Log.e(TAG, string(context, R.string.smshelper_sms_error, e.message ?: ""), e)
             callback(
                 false,
                 JSONObject().apply {
