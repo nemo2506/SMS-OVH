@@ -22,6 +22,12 @@ object ApiTokenManager {
         return token
     }
 
+    fun setToken(context: Context, token: String) {
+        getPrefs(context).edit {
+            putString(KEY_TOKEN, token)
+        }
+    }
+
     private fun getPrefs(context: Context) =
         EncryptedSharedPreferences.create(
             context,
