@@ -17,13 +17,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -55,7 +52,17 @@ fun MainScreen(
     val copyToClipboard: (String, String) -> Unit = { label, value ->
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboard.setPrimaryClip(ClipData.newPlainText(label, value))
-        Toast.makeText(context, context.getString(R.string.copied_in_clipboard), Toast.LENGTH_SHORT).show()
+        val messageRes = when (label) {
+            "send-endpoint" -> R.string.endpoint_send_copied
+            "logs-endpoint" -> R.string.endpoint_logs_copied
+            "battery-endpoint" -> R.string.endpoint_battery_copied
+            "connected-ip" -> R.string.connected_ip_copied
+            "token" -> R.string.token_copied
+            "location" -> R.string.location_copied
+            "network" -> R.string.network_copied
+            else -> R.string.endpoint_copied
+        }
+        Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_SHORT).show()
     }
 
     // Champs du formulaire SMS pilotés par le ViewModel

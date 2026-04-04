@@ -38,7 +38,14 @@
     <string name="api_endpoints_title">Endpoints API</string>
     <string name="endpoint_send_label">POST /api/send-message</string>
     <string name="endpoint_logs_label">POST /api/logs</string>
+    <string name="endpoint_battery_label">GET /api/battery</string>
     <string name="endpoint_copied">Endpoint copié</string>
+    <string name="endpoint_send_copied">Endpoint send copié</string>
+    <string name="endpoint_logs_copied">Endpoint logs copié</string>
+    <string name="endpoint_battery_copied">Endpoint battery copié</string>
+    <string name="connected_ip_copied">IP copiée</string>
+    <string name="location_copied">Localisation copiée</string>
+    <string name="network_copied">Réseau copié</string>
     <string name="copied_in_clipboard">dans le press papier</string>
     <string name="endpoint_wifi_hint">Connectez-vous au Wi-Fi pour afficher les endpoints actifs.</string>
     <string name="rest_port_label">Port API</string>

@@ -91,6 +91,11 @@ fun ApiNetworkSection(
     } else {
         ""
     }
+    val batteryEndpoint = if (uiState.isIpValid) {
+        "http://${uiState.hostIp}:${uiState.restPort}/api/battery"
+    } else {
+        ""
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -115,6 +120,12 @@ fun ApiNetworkSection(
                     value = logsEndpoint,
                     onCopy = { onCopy("logs-endpoint", logsEndpoint) },
                     label = { Text(stringResource(R.string.endpoint_logs_label)) }
+                )
+                Spacer(Modifier.height(8.dp))
+                CopyableReadOnlyField(
+                    value = batteryEndpoint,
+                    onCopy = { onCopy("battery-endpoint", batteryEndpoint) },
+                    label = { Text(stringResource(R.string.endpoint_battery_label)) }
                 )
             } else {
                 Text(
