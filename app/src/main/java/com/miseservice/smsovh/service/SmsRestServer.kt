@@ -1,6 +1,9 @@
 package com.miseservice.smsovh.service
 
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
 import android.util.Log
 import com.miseservice.smsovh.domain.usecase.SendRestMessageUseCase
 import com.miseservice.smsovh.model.SendMessageRequest
@@ -165,6 +168,9 @@ class SmsRestServer @Inject constructor(
                 session.method == Method.GET && session.uri == "/api/health" -> {
                     handleHealthCheck()
                 }
+                session.method == Method.GET && session.uri == "/api/battery" -> {
+                    handleBatteryStatus()
+                }
                 else -> {
                     saveApiLog("❌ Endpoint not found ${session.method} ${session.uri}")
                     createErrorResponse(Response.Status.NOT_FOUND, "Endpoint not found", 404)
@@ -184,6 +190,43 @@ class SmsRestServer @Inject constructor(
         json.put("version", API_VERSION)
         json.put("timestamp", System.currentTimeMillis())
         return newFixedLengthResponse(Response.Status.OK, "application/json", json.toString())
+    }
+
+    private fun handleBatteryStatus(): Response {
+        return try {
+            val batteryIntent = context.registerReceiver(
+                null,
+                IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+            )
+
+            if (batteryIntent == null) {
+                return createErrorResponse(Response.Status.INTERNAL_ERROR, "Battery data unavailable")
+            }
+
+            val level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            val scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+            val status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+
+            if (level < 0 || scale <= 0) {
+                return createErrorResponse(Response.Status.INTERNAL_ERROR, "Invalid battery values")
+            }
+
+            val percent = (level * 100) / scale
+            val isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL
+
+            val json = JSONObject().apply {
+                put("ok", true)
+                put("level", percent)
+                put("isCharging", isCharging)
+                put("timestamp", System.currentTimeMillis())
+            }
+
+            newFixedLengthResponse(Response.Status.OK, "application/json", json.toString())
+        } catch (e: Exception) {
+            Log.e(TAG, "Erreur handleBatteryStatus", e)
+            createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
+        }
     }
 
     private fun handleSendMessage(body: String): Response {

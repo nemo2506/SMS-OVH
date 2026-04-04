@@ -45,7 +45,7 @@ flowchart TD
     SEC[EncryptedSharedPreferences\nToken API + secrets]
     CTRL[ServiceControlManager]
     FG[SmsOvhForegroundService]
-    REST[SmsRestServer\n/api/send-message\n/api/send-sms\n/api/send-mms\n/api/logs\n/api/health]
+    REST[SmsRestServer\n/api/send-message\n/api/send-sms\n/api/send-mms\n/api/logs\n/api/health\n/api/battery]
     SMS[SmsHelper / SmsManager]
     OVH[API OVH SMS]
 
@@ -174,6 +174,7 @@ app/
 | `GET` | `/api/logs` | Retourne les 5 derniers logs persistés | Aucun |
 | `POST` | `/api/logs` | Ajoute un log applicatif | `message` |
 | `GET` | `/api/health` | Vérifie l'état du serveur REST local | Aucun |
+| `GET` | `/api/battery` | Retourne l'état batterie du téléphone | Aucun |
 
 ### Exemples de requêtes
 
@@ -181,6 +182,7 @@ app/
 curl -X POST "http://<IP_DU_TELEPHONE>:<PORT>/api/send-message" -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN_API>" -d "{\"senderId\":\"MYBRAND\",\"destinataire\":\"+33612345678\",\"text\":\"Test REST\",\"base64Jpeg\":\"\"}"
 curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/logs" -H "Authorization: Bearer <TOKEN_API>"
 curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/health" -H "Authorization: Bearer <TOKEN_API>"
+curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/battery" -H "Authorization: Bearer <TOKEN_API>"
 ```
 
 ### Formats de reponses JSON
@@ -207,12 +209,24 @@ Erreur (`400`, `401`, `404`, `500`):
 }
 ```
 
+Réponse dédiée `/api/battery` (`200`):
+
+```json
+{
+  "ok": true,
+  "level": 78,
+  "isCharging": false,
+  "timestamp": 1775227009115
+}
+```
+
 ### Regles de validation importantes
 
 - `destinataire` est obligatoire pour les envois SMS/MMS et est normalisé avant envoi.
 - `text` est obligatoire pour `/api/send-message` et `/api/send-sms`.
 - `base64Jpeg` est obligatoire pour `/api/send-mms`.
 - En cas d'erreur de validation, l'API renvoie un JSON d'erreur (jamais de HTML).
+- `/api/battery` renvoie le pattern: `ok`, `level`, `isCharging`, `timestamp`.
 
 ### Format image `base64Jpeg` (MMS)
 
