@@ -82,23 +82,30 @@ flowchart TD
 
 > 🔒 **Sécurité & Confidentialité**
 >
-> - 🔑 **Identifiants OVH** stockés uniquement via EncryptedSharedPreferences (MasterKey AndroidX)
-> - 🚫 **Aucune donnée sensible** dans le code source ou le dépôt Git
-> - 🗂️ **.gitignore** et **.git/info/exclude** configurés pour exclure `.idea/`, `local.properties`, fichiers de build, APK, logs, etc.
-> - 🛡️ **Permissions Android** gérées dynamiquement (SMS, batterie, foreground service)
+> - 🔑 **Identifiants OVH + token API** stockés localement de manière sécurisée (`EncryptedSharedPreferences` + `MasterKey`)
+> - 🛢️ **Séparation des données** : les réglages applicatifs sont persistés via Room, les secrets restent hors base en clair
+> - 🛡️ **API locale protégée par Bearer token** avec validation des entrées et réponses d’erreur JSON
+> - 📲 **Principe du moindre privilège** : permissions demandées en runtime uniquement quand nécessaire (SMS, localisation, batterie)
+> - 🔔 **Disponibilité contrôlée** : foreground service + gestion batterie/optimisation pour limiter les interruptions
+> - 🗂️ **Hygiène Git renforcée** : exclusions actives (`.gitignore`, `.git/info/exclude`) pour secrets, fichiers IDE, build, APK et artefacts lourds
 
 ---
 
 ## 📦 Technologies & Bonnes pratiques
 
-- 🟣 Kotlin, AndroidX, Material Components
-- 🏗️ MVVM, UseCase, Repository, DataSource
-- 🧩 Hilt (injection de dépendances)
-- 🔒 EncryptedSharedPreferences, MasterKey
-- 🔔 Gestion runtime des permissions (SMS, batterie)
-- 🎨 Thème clair/sombre, ressources vectorielles
-- 🌍 Multilingue (français/anglais)
-- 🧪 Tests unitaires (ViewModel, UseCase)
+- 🟣 **Kotlin + AndroidX** (app moderne, base maintenable)
+- 🎨 **Jetpack Compose** pour l’interface (`MainScreen`, composants UI dédiés)
+- 🏗️ **Architecture MVVM** avec `ViewModel` + `UiState` (StateFlow)
+- 🧠 **Domain layer** avec **UseCases** et séparation claire des responsabilités
+- 🗂️ **Repository pattern** (`data/repository`) + sources locales/techniques
+- 🧩 **Hilt (DI)** pour l’injection des dépendances à l’échelle de l’application
+- 🛢️ **Room** pour la persistance locale des réglages et logs (avec limites de rétention)
+- 🌐 **API REST locale** embarquée (NanoHTTPD) pour l’exécution distante SMS/MMS
+- 🔐 **Sécurité locale**: token API + `EncryptedSharedPreferences` (MasterKey)
+- 🔔 **Permissions runtime** et gestion batterie (foreground service, optimisation)
+- 🌗 **Thème clair/sombre** aligné sur la configuration système
+- 🌍 **Internationalisation FR/EN** via ressources `values` / `values-fr` / `values-en`
+- 🧪 **Tests unitaires et instrumentés** (service, viewmodel, circuits API/SMS)
 
 ---
 
@@ -106,19 +113,33 @@ flowchart TD
 
 ```
 app/
-├── src/main/
-│   ├── java/com/miseservice/smsovh/
-│   │   ├── di/                ← Modules Hilt
-│   │   ├── data/              ← Repository, DataSource
-│   │   ├── domain/            ← UseCases
-│   │   ├── ui/                ← ViewModel, Activity, Fragment
-│   │   └── App.kt             ← Application (Hilt)
-│   ├── res/
-│   │   ├── layout/            ← activity_main.xml, etc.
-│   │   ├── values/            ← colors.xml, strings.xml, themes.xml
-│   │   ├── drawable/          ← ic_launcher, icônes vectorielles
-│   │   └── mipmap*/           ← ic_launcher, etc.
-│   └── AndroidManifest.xml
+├── src/
+│   ├── main/
+│   │   ├── AndroidManifest.xml
+│   │   ├── java/com/miseservice/smsovh/
+│   │   │   ├── SmsOvhApp.kt               ← Application + bootstrap global
+│   │   │   ├── di/                        ← Modules Hilt (bind/provide)
+│   │   │   ├── data/
+│   │   │   │   ├── datasource/            ← Sources techniques
+│   │   │   │   ├── repository/            ← Implémentations Repository
+│   │   │   │   └── local/                 ← Room (DB, DAO, Entity)
+│   │   │   ├── domain/
+│   │   │   │   ├── repository/            ← Contrats métier
+│   │   │   │   └── usecase/               ← Cas d’usage (orchestration)
+│   │   │   ├── service/                   ← Foreground service + serveur REST local
+│   │   │   ├── util/                      ← Helpers (SMS, token, réseau, permissions)
+│   │   │   ├── viewmodel/                 ← MainViewModel + UI state
+│   │   │   ├── ui/
+│   │   │   │   ├── MainActivity.kt
+│   │   │   │   ├── MainScreen.kt          ← UI Jetpack Compose
+│   │   │   │   ├── components/            ← Sections composables
+│   │   │   │   └── theme/                 ← Couleurs/typo/thèmes light/dark
+│   │   │   └── model/                     ← Modèles partagés
+│   │   └── res/                           ← Ressources Android (values, mipmap, xml...)
+│   ├── test/java/com/miseservice/smsovh/  ← Tests unitaires (service, viewmodel, util)
+│   └── androidTest/java/com/miseservice/smsovh/
+│       ├── ApiCircuitTest.kt              ← Tests instrumentés API locale
+│       └── LocalSmsCircuitTest.kt         ← Tests instrumentés envoi local
 ├── build.gradle
 └── ...
 ```

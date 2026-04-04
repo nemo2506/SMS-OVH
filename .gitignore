@@ -1,17 +1,40 @@
+# IDE / système
 .idea/
+.vscode/
 *.iml
-local.properties
 .DS_Store
+Thumbs.db
+Desktop.ini
+
+# Secrets et configuration locale
+local.properties
+**/local.properties
+**/secrets.properties
+*.keystore
+*.jks
+*.pem
+*.crt
+*.der
+
+# Build / caches / générés
 /build/
 /app/build/
+**/build/
+**/generated/
+**/outputs/
+**/reports/
+.gradle/
+.cxx/
+/app/build/intermediates/
+/app/build/generated/
+
+# Binaires / archives / gros fichiers
 *.apk
 *.ap_*
 *.dex
 *.class
-*.log
 *.hprof
-
-# Fichiers volumineux et binaires
+*.log
 *.zip
 *.jar
 *.aar
@@ -26,183 +49,24 @@ local.properties
 *.so
 *.dylib
 *.pdb
-*.tmp
-*.swp
-*.bak
 
-# Dossiers générés par Gradle
+# Gradle local / distributions
 /gradle-8.5-bin/
 /gradle-8.5-bin.zip
-/gradle-8.5-bin/
-/gradle/
 /gradle-*/
+**/gradle/wrapper/gradle-wrapper.properties.lock
 
-# Exclure les jars du dossier gradle-8.5-bin
-/gradle-8.5-bin/**/*.jar
-
-# Exclure les APKs générés
-/app/release/*.apk
-
-# Exclure les fichiers de configuration utilisateur
-*.keystore
-*.jks
-
-# Exclure les fichiers de rapport
-/build/reports/
-
-# Exclure les fichiers de cache
-/.gradle/
-/.cxx/
-
-# Exclure les fichiers de test générés
-/app/build/intermediates/
-/app/build/generated/
-
-# Exclure les fichiers de configuration Android Studio
-.cxx/
-
-# Exclure les fichiers temporaires
+# Temporaires
 *.tmp
 *.temp
-
-# Exclure les fichiers de sauvegarde
-*~
-
-# Exclure les fichiers de crash
-crashlytics-build.properties
-
-# Exclure les fichiers de signature
-*.pem
-*.crt
-*.der
-
-# Exclure les fichiers inutiles
-Thumbs.db
-Desktop.ini
-
-# Protéger le dossier SOURCE (déjà ignoré)
-/SOURCE/
-
-# Exclusions supplémentaires (fusion)
-captures/
-output.json
-# Sensitive files
-**/local.properties
-**/secrets.properties
-# Exclude all user-specific and IDE config
-**/.idea/
-**/.vscode/
-# Exclude generated files
-**/build/
-**/generated/
-# Exclude APKs and outputs
-**/outputs/
-# Exclude test reports
-**/reports/
-# Exclude gradle wrapper logs
-**/gradle/wrapper/gradle-wrapper.properties.lock
-.idea/
-*.iml
-local.properties
-.DS_Store
-/build/
-/app/build/
-*.apk
-*.ap_*
-*.dex
-*.class
-*.log
-*.hprof
-
-# Fichiers volumineux et binaires
-*.zip
-*.jar
-*.aar
-*.tar.gz
-*.7z
-*.tgz
-*.tar
-*.gz
-*.bin
-*.exe
-*.dll
-*.so
-*.dylib
-*.pdb
-*.tmp
 *.swp
 *.bak
-
-# Dossiers générés par Gradle
-/gradle-8.5-bin/
-/gradle-8.5-bin.zip
-/gradle-8.5-bin/
-/gradle/
-/gradle-*/
-
-# Exclure les jars du dossier gradle-8.5-bin
-/gradle-8.5-bin/**/*.jar
-
-# Exclure les APKs générés
-/app/release/*.apk
-
-# Exclure les fichiers de configuration utilisateur
-*.keystore
-*.jks
-
-# Exclure les fichiers de rapport
-/build/reports/
-
-# Exclure les fichiers de cache
-/.gradle/
-/.cxx/
-
-# Exclure les fichiers de test générés
-/app/build/intermediates/
-/app/build/generated/
-
-# Exclure les fichiers de configuration Android Studio
-.cxx/
-
-# Exclure les fichiers temporaires
-*.tmp
-<<<<<<< HEAD
-captures/
-output.json
-# Sensitive files
-**/local.properties
-**/secrets.properties
-# Exclude all user-specific and IDE config
-**/.idea/
-**/.vscode/
-# Exclude generated files
-**/build/
-**/generated/
-# Exclude APKs and outputs
-**/outputs/
-# Exclude test reports
-**/reports/
-# Exclude gradle wrapper logs
-**/gradle/wrapper/gradle-wrapper.properties.lock
->>>>>>> 8e54822 (🔒 Sécurité : README, .gitignore, architecture MVVM, exclusion SOURCE, refonte complète)
-=======
-*.temp
-
-# Exclure les fichiers de sauvegarde
 *~
 
-# Exclure les fichiers de crash
+# Divers
+captures/
+output.json
 crashlytics-build.properties
 
-# Exclure les fichiers de signature
-*.pem
-*.crt
-*.der
-
-# Exclure les fichiers inutiles
-Thumbs.db
-Desktop.ini
-
-# Protéger le dossier SOURCE (déjà ignoré)
->>>>>>> ef26eb5 (fix(git): exclure les fichiers volumineux et binaires du dépôt (.gitignore, nettoyage index))
+# Dossiers à exclure du dépôt
 /SOURCE/
