@@ -1,9 +1,7 @@
 package com.miseservice.smsovh.di
 
 import com.miseservice.smsovh.data.repository.CredentialsRepositoryImpl
-import com.miseservice.smsovh.data.repository.SmsRepositoryImpl
 import com.miseservice.smsovh.domain.repository.CredentialsRepository
-import com.miseservice.smsovh.domain.repository.SmsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -12,16 +10,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+@Suppress("unused")
 abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCredentialsRepository(
         impl: CredentialsRepositoryImpl
     ): CredentialsRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindSmsRepository(
-        impl: SmsRepositoryImpl
-    ): SmsRepository
 }
