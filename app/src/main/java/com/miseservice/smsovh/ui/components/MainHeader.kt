@@ -29,7 +29,7 @@ fun MainHeader() {
         )
         Text(
             text = stringResource(R.string.header_ovh),
-            fontSize = 13.sp,
+            fontSize = 15.sp,
             color = colorResource(id = R.color.smsovh_primary),
             fontWeight = FontWeight.Bold
         )

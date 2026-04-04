@@ -41,6 +41,8 @@ fun ApiNetworkSection(
     onResetToken: () -> Unit,
     onCopy: (String, String) -> Unit
 ) {
+    val emphasizedLabelSize = 18.sp
+
     HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
     Spacer(Modifier.height(12.dp))
     Text(
@@ -54,7 +56,7 @@ fun ApiNetworkSection(
     OutlinedTextField(
         value = uiState.restPortInput,
         onValueChange = onRestPortInputChange,
-        label = { Text(stringResource(R.string.rest_port_label)) },
+        label = { Text(stringResource(R.string.rest_port_label), fontSize = emphasizedLabelSize) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions(
@@ -75,7 +77,7 @@ fun ApiNetworkSection(
     CopyableReadOnlyField(
         value = ipValue,
         onCopy = { onCopy("connected-ip", ipValue) },
-        label = { Text(stringResource(R.string.connected_ip_label)) }
+        label = { Text(stringResource(R.string.connected_ip_label), fontSize = emphasizedLabelSize) }
     )
     Spacer(Modifier.height(10.dp))
 
@@ -104,7 +106,7 @@ fun ApiNetworkSection(
                 text = stringResource(R.string.api_endpoints_title),
                 color = colorResource(id = R.color.smsovh_primary),
                 fontWeight = FontWeight.Bold,
-                fontSize = 12.sp
+                fontSize = 15.sp
             )
             Spacer(Modifier.height(8.dp))
             if (uiState.isIpValid) {
@@ -129,7 +131,7 @@ fun ApiNetworkSection(
                 Text(
                     text = stringResource(R.string.endpoint_wifi_hint),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 12.sp
+                    fontSize = 15.sp
                 )
             }
         }
@@ -141,7 +143,7 @@ fun ApiNetworkSection(
         onCopy = { onCopy("token", token) },
         label = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.api_token_label))
+                Text(stringResource(R.string.api_token_label), fontSize = emphasizedLabelSize)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "🔁 RESET",
@@ -169,7 +171,7 @@ fun ApiNetworkSection(
     CopyableReadOnlyField(
         value = locationValue,
         onCopy = { onCopy("location", locationValue) },
-        label = { Text(stringResource(R.string.location_label)) }
+        label = { Text(stringResource(R.string.location_label), fontSize = emphasizedLabelSize) }
     )
 
     Spacer(Modifier.height(10.dp))

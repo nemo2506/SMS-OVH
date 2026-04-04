@@ -25,6 +25,8 @@ fun OvhSmsFormSection(
     onRecipientChange: (String) -> Unit,
     onMessageChange: (String) -> Unit
 ) {
+    val formLabelSize = 15.sp
+
     Text(
         text = stringResource(R.string.config_ovh),
         fontSize = 16.5.sp,
@@ -35,7 +37,7 @@ fun OvhSmsFormSection(
     OutlinedTextField(
         value = senderId,
         onValueChange = onSenderIdChange,
-        label = { Text(stringResource(R.string.sender_id_hint)) },
+        label = { Text(stringResource(R.string.sender_id_hint), fontSize = formLabelSize) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true
     )
@@ -43,7 +45,7 @@ fun OvhSmsFormSection(
     OutlinedTextField(
         value = recipient,
         onValueChange = onRecipientChange,
-        label = { Text(stringResource(R.string.recipient_hint)) },
+        label = { Text(stringResource(R.string.recipient_hint), fontSize = formLabelSize) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
@@ -52,7 +54,7 @@ fun OvhSmsFormSection(
     OutlinedTextField(
         value = message,
         onValueChange = onMessageChange,
-        label = { Text(stringResource(R.string.message_hint)) },
+        label = { Text(stringResource(R.string.message_hint), fontSize = formLabelSize) },
         modifier = Modifier.fillMaxWidth(),
         maxLines = 8,
         minLines = 4
