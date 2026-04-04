@@ -5,13 +5,16 @@ import com.miseservice.smsovh.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.miseservice.smsovh.domain.usecase.SendSmsUseCase
+import com.miseservice.smsovh.domain.usecase.SendOvhSmsUseCase
 import com.miseservice.smsovh.domain.usecase.GetSettingsUseCase
 import com.miseservice.smsovh.domain.usecase.UpdateRestPortUseCase
+import com.miseservice.smsovh.model.OvhSmsRequest
 import com.miseservice.smsovh.model.SmsMessage
 import com.miseservice.smsovh.model.SendResult
 import com.miseservice.smsovh.data.repository.SettingsRepository
 import com.miseservice.smsovh.service.ServiceControlManager
 import com.miseservice.smsovh.util.ApiTokenManager
+import com.miseservice.smsovh.util.PhoneNumberValidator
 import com.miseservice.smsovh.util.RestServerEventManager
 import com.miseservice.smsovh.util.RestServerEventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +31,7 @@ import kotlinx.coroutines.launch
 class MainViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val sendSmsUseCase: SendSmsUseCase,
+    private val sendOvhSmsUseCase: SendOvhSmsUseCase,
     private val getSettingsUseCase: GetSettingsUseCase,
     private val updateRestPortUseCase: UpdateRestPortUseCase,
     private val settingsRepository: SettingsRepository,
@@ -84,6 +88,12 @@ class MainViewModel @Inject constructor(
             senderId = currentSettings.senderId.orEmpty(),
             recipient = currentSettings.recipient.orEmpty(),
             message = currentSettings.message.orEmpty(),
+            ovhAppKey = currentSettings.ovhAppKey.orEmpty(),
+            ovhAppSecret = currentSettings.ovhAppSecret.orEmpty(),
+            ovhConsumerKey = currentSettings.ovhConsumerKey.orEmpty(),
+            ovhServiceName = currentSettings.ovhServiceName.orEmpty(),
+            ovhEndpoint = currentSettings.ovhEndpoint ?: "ovh-eu",
+            ovhCountryPrefix = currentSettings.ovhCountryPrefix ?: "+33",
             serviceActive = currentSettings.serviceActive,
             hostIp = host,
             isIpValid = isHostIpUsable(host)
@@ -121,6 +131,12 @@ class MainViewModel @Inject constructor(
                 senderId = state.senderId,
                 recipient = state.recipient,
                 message = state.message,
+                ovhAppKey = state.ovhAppKey,
+                ovhAppSecret = state.ovhAppSecret,
+                ovhConsumerKey = state.ovhConsumerKey,
+                ovhServiceName = state.ovhServiceName,
+                ovhEndpoint = state.ovhEndpoint,
+                ovhCountryPrefix = state.ovhCountryPrefix,
                 serviceActive = state.serviceActive,
                 hostIp = state.hostIp,
                 restPort = state.restPort,
@@ -165,6 +181,12 @@ class MainViewModel @Inject constructor(
                     senderId = null,
                     recipient = null,
                     message = null,
+                    ovhAppKey = null,
+                    ovhAppSecret = null,
+                    ovhConsumerKey = null,
+                    ovhServiceName = null,
+                    ovhEndpoint = "ovh-eu",
+                    ovhCountryPrefix = "+33",
                     serviceActive = false,
                     hostIp = null,
                     restPort = DEFAULT_REST_PORT,
@@ -232,6 +254,40 @@ class MainViewModel @Inject constructor(
 
     fun setMessage(message: String) {
         _uiState.value = _uiState.value.copy(message = message)
+        schedulePersistCurrentSettings()
+    }
+
+    fun setSelectedTab(index: Int) {
+        _uiState.value = _uiState.value.copy(selectedTabIndex = index)
+    }
+
+    fun setOvhAppKey(value: String) {
+        _uiState.value = _uiState.value.copy(ovhAppKey = value)
+        schedulePersistCurrentSettings()
+    }
+
+    fun setOvhAppSecret(value: String) {
+        _uiState.value = _uiState.value.copy(ovhAppSecret = value)
+        schedulePersistCurrentSettings()
+    }
+
+    fun setOvhConsumerKey(value: String) {
+        _uiState.value = _uiState.value.copy(ovhConsumerKey = value)
+        schedulePersistCurrentSettings()
+    }
+
+    fun setOvhServiceName(value: String) {
+        _uiState.value = _uiState.value.copy(ovhServiceName = value)
+        schedulePersistCurrentSettings()
+    }
+
+    fun setOvhEndpoint(value: String) {
+        _uiState.value = _uiState.value.copy(ovhEndpoint = value)
+        schedulePersistCurrentSettings()
+    }
+
+    fun setOvhCountryPrefix(value: String) {
+        _uiState.value = _uiState.value.copy(ovhCountryPrefix = value)
         schedulePersistCurrentSettings()
     }
 
@@ -361,6 +417,53 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun sendOvhSms() {
+        val state = _uiState.value
+        val defaultCountryCode = state.ovhCountryPrefix.removePrefix("+").ifBlank { "33" }
+        val normalizedRecipient = PhoneNumberValidator.normalize(state.recipient, defaultCountryCode)
+        if (normalizedRecipient == null) {
+            _uiState.value = _uiState.value.copy(
+                feedbackMessage = context.getString(R.string.feedback_error_with_message, "Numero recipient invalide"),
+                feedbackType = FeedbackType.ERROR
+            )
+            return
+        }
+
+        val request = OvhSmsRequest(
+            senderId = state.senderId.takeIf { it.isNotBlank() },
+            appKey = state.ovhAppKey,
+            appSecret = state.ovhAppSecret,
+            consumerKey = state.ovhConsumerKey,
+            serviceName = state.ovhServiceName,
+            endpoint = state.ovhEndpoint,
+            countryPrefix = state.ovhCountryPrefix,
+            recipient = normalizedRecipient,
+            message = state.message
+        )
+
+        viewModelScope.launch {
+            when (val result = sendOvhSmsUseCase(request)) {
+                is SendResult.Success -> {
+                    _uiState.value = _uiState.value.copy(
+                        message = "",
+                        feedbackMessage = "SMS OVH envoye avec succes",
+                        feedbackType = FeedbackType.SUCCESS
+                    )
+                    delay(4000)
+                    clearFeedback()
+                }
+                is SendResult.Error -> {
+                    _uiState.value = _uiState.value.copy(
+                        feedbackMessage = context.getString(R.string.feedback_error_with_message, result.message),
+                        feedbackType = FeedbackType.ERROR
+                    )
+                    delay(5000)
+                    clearFeedback()
+                }
+            }
+        }
+    }
+
     fun clearFeedback() {
         _uiState.value = _uiState.value.copy(
             feedbackMessage = null,
@@ -376,6 +479,7 @@ class MainViewModel @Inject constructor(
     override fun onCleared() {
         saveSettingsJob?.cancel()
         restPortEditingUnlockJob?.cancel()
+        persistCurrentSettingsNow()
         super.onCleared()
     }
 }

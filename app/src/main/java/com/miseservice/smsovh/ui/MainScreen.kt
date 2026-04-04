@@ -27,6 +27,7 @@ import androidx.core.net.toUri
 import com.miseservice.smsovh.R
 import com.miseservice.smsovh.ui.components.ApiNetworkSection
 import com.miseservice.smsovh.ui.components.MainHeader
+import com.miseservice.smsovh.ui.components.OvhApiConfigSection
 import com.miseservice.smsovh.ui.components.OvhSmsFormSection
 import com.miseservice.smsovh.ui.components.SendSmsSection
 import com.miseservice.smsovh.ui.components.ServiceStatusRow
@@ -82,6 +83,8 @@ fun MainScreen(
     val senderId = uiState.senderId
     val recipient = uiState.recipient
     val message = uiState.message
+    val ovhTabTitles = listOf("Composer", "Config API")
+    val selectedTabIndex = uiState.selectedTabIndex.coerceIn(0, ovhTabTitles.lastIndex)
     val activity = context as? android.app.Activity
 
     LaunchedEffect(uiState.serviceActive) {
@@ -242,34 +245,74 @@ fun MainScreen(
                 onCheckedChange = { checked -> viewModel.setServiceActive(checked) }
             )
             Spacer(Modifier.height(32.dp))
-            OvhSmsFormSection(
-                senderId = senderId,
-                recipient = recipient,
-                message = message,
-                onSenderIdChange = { viewModel.setSenderId(it.take(11)) },
-                onRecipientChange = { viewModel.setRecipient(it) },
-                onMessageChange = { viewModel.setMessage(it) }
-            )
-            ApiNetworkSection(
-                uiState = uiState,
-                token = token,
-                locationPermissionGranted = locationPermissionGranted,
-                locationData = locationData,
-                onRestPortInputChange = { viewModel.setRestPortInput(it) },
-                onRestPortCommit = {
-                    if (viewModel.commitRestPort()) {
-                        focusManager.clearFocus()
+            TabRow(selectedTabIndex = selectedTabIndex) {
+                ovhTabTitles.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { viewModel.setSelectedTab(index) },
+                        text = { Text(title) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+
+            when (selectedTabIndex) {
+                0 -> {
+                    OvhSmsFormSection(
+                        senderId = senderId,
+                        recipient = recipient,
+                        message = message,
+                        onSenderIdChange = { viewModel.setSenderId(it.take(11)) },
+                        onRecipientChange = { viewModel.setRecipient(it) },
+                        onMessageChange = { viewModel.setMessage(it) }
+                    )
+                    SendSmsSection(
+                        enabled = uiState.canSendLocalSms,
+                        hasSendSmsPermission = hasSendSmsPermission,
+                        onRequestSmsPermission = onRequestSmsPermission,
+                        onSendSmsRequested = onSendSmsRequested
+                    )
+                    Button(
+                        onClick = { viewModel.sendOvhSms() },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = uiState.canSendOvhSms
+                    ) {
+                        Text("Envoyer via OVH API")
                     }
-                },
-                onResetToken = { viewModel.resetToken() },
-                onCopy = copyToClipboard
-            )
-            SendSmsSection(
-                enabled = uiState.canSendLocalSms,
-                hasSendSmsPermission = hasSendSmsPermission,
-                onRequestSmsPermission = onRequestSmsPermission,
-                onSendSmsRequested = onSendSmsRequested
-            )
+                }
+
+                1 -> {
+                    OvhApiConfigSection(
+                        ovhAppKey = uiState.ovhAppKey,
+                        ovhAppSecret = uiState.ovhAppSecret,
+                        ovhConsumerKey = uiState.ovhConsumerKey,
+                        ovhServiceName = uiState.ovhServiceName,
+                        ovhEndpoint = uiState.ovhEndpoint,
+                        ovhCountryPrefix = uiState.ovhCountryPrefix,
+                        onOvhAppKeyChange = { viewModel.setOvhAppKey(it) },
+                        onOvhAppSecretChange = { viewModel.setOvhAppSecret(it) },
+                        onOvhConsumerKeyChange = { viewModel.setOvhConsumerKey(it) },
+                        onOvhServiceNameChange = { viewModel.setOvhServiceName(it) },
+                        onOvhEndpointChange = { viewModel.setOvhEndpoint(it) },
+                        onOvhCountryPrefixChange = { viewModel.setOvhCountryPrefix(it) }
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    ApiNetworkSection(
+                        uiState = uiState,
+                        token = token,
+                        locationPermissionGranted = locationPermissionGranted,
+                        locationData = locationData,
+                        onRestPortInputChange = { viewModel.setRestPortInput(it) },
+                        onRestPortCommit = {
+                            if (viewModel.commitRestPort()) {
+                                focusManager.clearFocus()
+                            }
+                        },
+                        onResetToken = { viewModel.resetToken() },
+                        onCopy = copyToClipboard
+                    )
+                }
+            }
             // Suppression de l'affichage des logs/statuts
         }
     }

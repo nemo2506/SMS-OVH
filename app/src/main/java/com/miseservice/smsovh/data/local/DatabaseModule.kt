@@ -17,6 +17,17 @@ private val MIGRATION_1_2 = object : Migration(1, 2) {
     }
 }
 
+private val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE app_settings ADD COLUMN ovhAppKey TEXT")
+        db.execSQL("ALTER TABLE app_settings ADD COLUMN ovhAppSecret TEXT")
+        db.execSQL("ALTER TABLE app_settings ADD COLUMN ovhConsumerKey TEXT")
+        db.execSQL("ALTER TABLE app_settings ADD COLUMN ovhServiceName TEXT")
+        db.execSQL("ALTER TABLE app_settings ADD COLUMN ovhEndpoint TEXT")
+        db.execSQL("ALTER TABLE app_settings ADD COLUMN ovhCountryPrefix TEXT")
+    }
+}
+
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
@@ -24,7 +35,7 @@ object DatabaseModule {
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "app_db")
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
     @Provides

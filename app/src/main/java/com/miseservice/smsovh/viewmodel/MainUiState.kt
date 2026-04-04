@@ -20,11 +20,18 @@ package com.miseservice.smsovh.viewmodel
  */
 data class MainUiState(
     val isLoading: Boolean = false,
+    val selectedTabIndex: Int = 0,
     val serviceToggleTargetActive: Boolean? = null,
     val serviceActive: Boolean = false,
     val senderId: String = "",
     val recipient: String = "",
     val message: String = "",
+    val ovhAppKey: String = "",
+    val ovhAppSecret: String = "",
+    val ovhConsumerKey: String = "",
+    val ovhServiceName: String = "",
+    val ovhEndpoint: String = "ovh-eu",
+    val ovhCountryPrefix: String = "+33",
     val hostIp: String = "127.0.0.1",
     val restPort: Int = 8080,
     val restPortInput: String = "8080",
@@ -39,6 +46,16 @@ data class MainUiState(
 ) {
     val canSendLocalSms: Boolean
         get() = serviceActive && !isLoading && recipient.isNotBlank() && message.isNotBlank()
+
+    val canSendOvhSms: Boolean
+        get() = !isLoading &&
+            senderId.isNotBlank() &&
+            recipient.isNotBlank() &&
+            message.isNotBlank() &&
+            ovhAppKey.isNotBlank() &&
+            ovhAppSecret.isNotBlank() &&
+            ovhConsumerKey.isNotBlank() &&
+            ovhServiceName.isNotBlank()
 }
 
 enum class FeedbackType {
