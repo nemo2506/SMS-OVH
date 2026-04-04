@@ -3,16 +3,17 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id 'com.google.devtools.ksp'
 }
 
 android {
     namespace 'com.miseservice.smsovh'
-    compileSdk 34
+    compileSdk libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
         applicationId "com.miseservice.smsovh"
-        minSdk 26
-        targetSdk 34
+        minSdk libs.versions.minSdk.get().toInteger()
+        targetSdk libs.versions.targetSdk.get().toInteger()
         versionCode 1
         versionName "1.0"
     }
@@ -25,12 +26,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     buildFeatures {
@@ -38,46 +39,51 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-
-    // Serveur HTTP embarqué pour API RESTful locale
-    implementation 'org.nanohttpd:nanohttpd:2.3.1'
-
-    // Material Design
-    implementation 'com.google.android.material:material:1.11.0'
-
-    // Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-
-    implementation "androidx.security:security-crypto:1.1.0-alpha05"
-
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
-    implementation 'androidx.activity:activity-ktx:1.8.0'
+    implementation libs.core.ktx
+    implementation libs.appcompat
+    implementation libs.nanohttpd
+    implementation libs.material
+    implementation libs.coroutines.android
+    implementation libs.security.crypto
+    implementation libs.lifecycle.viewmodel.ktx
+    implementation libs.activity.ktx
 
     // Hilt
-    implementation "com.google.dagger:hilt-android:2.50"
-    kapt "com.google.dagger:hilt-android-compiler:2.50"
-    kapt "androidx.hilt:hilt-compiler:1.0.0"
-    implementation "javax.inject:javax.inject:1"
+    implementation libs.hilt.android
+    kapt libs.hilt.android.compiler
+    kapt libs.hilt.compiler
+    implementation libs.javax.inject
 
     // Jetpack Compose — BOM gère toutes les versions Compose
-    implementation platform('androidx.compose:compose-bom:2024.05.00')
-    implementation 'androidx.compose.ui:ui'
-    implementation 'androidx.compose.material3:material3'
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.activity:activity-compose:1.9.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.7.0'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.ui
+    implementation libs.compose.material3
+    implementation libs.compose.material.icons.extended
+    implementation libs.compose.ui.tooling.preview
+    implementation libs.activity.compose
+    implementation libs.lifecycle.runtime.compose
+    debugImplementation libs.compose.ui.tooling
 
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation libs.okhttp
+    implementation libs.android.smsmms
+
+    // Room (base, KTX, compiler)
+    implementation libs.room.runtime
+    implementation libs.room.ktx
+    ksp libs.room.compiler
+    // Optionnel : Paging support
+    // implementation libs.room.paging
+
     // Tests
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    testImplementation libs.junit
+    testImplementation libs.mockito.core
+    testImplementation libs.mockito.kotlin
+    testImplementation libs.coroutines.test
+    androidTestImplementation libs.test.ext.junit
+    androidTestImplementation libs.test.espresso
 }
