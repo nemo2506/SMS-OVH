@@ -8,6 +8,10 @@ import com.miseservice.smsovh.domain.usecase.ClearCredentialsUseCase
 import com.miseservice.smsovh.domain.usecase.GetLoginUseCase
 import com.miseservice.smsovh.domain.usecase.GetPasswordUseCase
 import com.miseservice.smsovh.domain.usecase.SaveCredentialsUseCase
+import com.miseservice.smsovh.util.RestServerEventManager
+import com.miseservice.smsovh.service.AndroidServiceControlManager
+import com.miseservice.smsovh.service.ServiceControlManager
+import com.miseservice.smsovh.service.SmsRestServer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,5 +42,16 @@ object AppModule {
     @Provides
     @Singleton
     fun provideClearCredentialsUseCase(repo: CredentialsRepository) = ClearCredentialsUseCase(repo)
+
+    @Provides
+    @Singleton
+    fun provideRestServerEventManager(): RestServerEventManager = RestServerEventManager()
+
+    @Provides
+    @Singleton
+    fun provideServiceControlManager(
+        @ApplicationContext context: Context,
+        smsRestServer: SmsRestServer
+    ): ServiceControlManager = AndroidServiceControlManager(context, smsRestServer)
 }
 
