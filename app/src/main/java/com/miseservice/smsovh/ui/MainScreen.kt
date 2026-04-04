@@ -44,6 +44,15 @@ fun MainScreen(
     onRequestSmsPermission: () -> Unit,
     onSendSmsRequested: () -> Unit
 ) {
+    fun withStatusPrefix(message: String, type: FeedbackType): String {
+        val trimmed = message.trim()
+        return when (type) {
+            FeedbackType.SUCCESS -> if (trimmed.startsWith("✅")) trimmed else "✅ $trimmed"
+            FeedbackType.ERROR -> if (trimmed.startsWith("❌")) trimmed else "❌ $trimmed"
+            else -> trimmed
+        }
+    }
+
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val uiState = viewModel.uiState.collectAsState().value
@@ -62,7 +71,11 @@ fun MainScreen(
             "network" -> R.string.network_copied
             else -> R.string.endpoint_copied
         }
-        Toast.makeText(context, context.getString(messageRes), Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            context,
+            withStatusPrefix(context.getString(messageRes), FeedbackType.SUCCESS),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     // Champs du formulaire SMS pilotés par le ViewModel
@@ -188,7 +201,7 @@ fun MainScreen(
     LaunchedEffect(uiState.feedbackMessage) {
         if (uiState.feedbackMessage != null) {
             snackbarHostState.showSnackbar(
-                message = uiState.feedbackMessage,
+                message = withStatusPrefix(uiState.feedbackMessage, uiState.feedbackType),
                 duration = if (uiState.feedbackType == FeedbackType.SUCCESS) SnackbarDuration.Short else SnackbarDuration.Long
             )
         }

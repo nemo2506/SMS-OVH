@@ -36,11 +36,68 @@ class MainViewModel @Inject constructor(
     private val serviceToggleProcessor: ServiceToggleProcessor
 ) : ViewModel() {
     private var saveSettingsJob: Job? = null
+    private var restPortEditingUnlockJob: Job? = null
     private var lastAppliedServiceActive: Boolean? = null
+    @Volatile
+    private var isRestPortEditing: Boolean = false
+    private var pendingObservedSettings: com.miseservice.smsovh.data.local.AppSettingsEntity? = null
 
     private companion object {
         const val SETTINGS_SAVE_DEBOUNCE_MS = 500L
         const val DEFAULT_REST_PORT = 8080
+        const val REST_PORT_EDIT_GRACE_MS = 5000L
+    }
+
+    private fun beginRestPortEditingWindow() {
+        isRestPortEditing = true
+        restPortEditingUnlockJob?.cancel()
+        restPortEditingUnlockJob = viewModelScope.launch {
+            delay(REST_PORT_EDIT_GRACE_MS)
+            endRestPortEditingWindow()
+        }
+    }
+
+    private fun endRestPortEditingWindow() {
+        restPortEditingUnlockJob?.cancel()
+        restPortEditingUnlockJob = null
+        isRestPortEditing = false
+        val pending = pendingObservedSettings
+        pendingObservedSettings = null
+        if (pending != null) {
+            applyObservedSettings(pending)
+        }
+    }
+
+    private fun applyObservedSettings(currentSettings: com.miseservice.smsovh.data.local.AppSettingsEntity) {
+        val host = currentSettings.hostIp ?: _uiState.value.hostIp
+        val restPort = currentSettings.restPort.takeIf { isPortValid(it) } ?: DEFAULT_REST_PORT
+        runCatching {
+            applyServiceActiveState(currentSettings.serviceActive)
+        }.onFailure { error ->
+            _uiState.value = _uiState.value.copy(
+                feedbackMessage = "❌ Service indisponible: ${error.message}",
+                feedbackType = FeedbackType.ERROR
+            )
+        }
+
+        val baseState = _uiState.value.copy(
+            senderId = currentSettings.senderId.orEmpty(),
+            recipient = currentSettings.recipient.orEmpty(),
+            message = currentSettings.message.orEmpty(),
+            serviceActive = currentSettings.serviceActive,
+            hostIp = host,
+            isIpValid = isHostIpUsable(host)
+        )
+
+        _uiState.value = if (isRestPortEditing) {
+            baseState
+        } else {
+            baseState.copy(
+                restPort = restPort,
+                restPortInput = restPort.toString(),
+                restPortError = null
+            )
+        }
     }
 
     private fun isHostIpUsable(ip: String): Boolean {
@@ -123,28 +180,11 @@ class MainViewModel @Inject constructor(
 
             settingsRepository.observeSettings().collect { observed ->
                 val currentSettings = observed ?: return@collect
-                val host = currentSettings.hostIp ?: _uiState.value.hostIp
-                val restPort = currentSettings.restPort.takeIf { isPortValid(it) } ?: DEFAULT_REST_PORT
                 _token.value = currentSettings.token ?: secureToken
-                runCatching {
-                    applyServiceActiveState(currentSettings.serviceActive)
-                }.onFailure { error ->
-                    _uiState.value = _uiState.value.copy(
-                        feedbackMessage = "❌ Service indisponible: ${error.message}",
-                        feedbackType = FeedbackType.ERROR
-                    )
+                if (isRestPortEditing) {
+                    pendingObservedSettings = currentSettings
                 }
-                _uiState.value = _uiState.value.copy(
-                    senderId = currentSettings.senderId.orEmpty(),
-                    recipient = currentSettings.recipient.orEmpty(),
-                    message = currentSettings.message.orEmpty(),
-                    serviceActive = currentSettings.serviceActive,
-                    hostIp = host,
-                    restPort = restPort,
-                    restPortInput = restPort.toString(),
-                    restPortError = null,
-                    isIpValid = isHostIpUsable(host)
-                )
+                applyObservedSettings(currentSettings)
             }
         }
 
@@ -196,6 +236,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun setRestPortInput(portText: String) {
+        beginRestPortEditingWindow()
         val trimmed = portText.filter { it.isDigit() }.take(5)
         val parsed = parsePortOrNull(trimmed)
         val error = when {
@@ -217,9 +258,11 @@ class MainViewModel @Inject constructor(
                 restPortError = context.getString(R.string.rest_port_invalid),
                 restPortInput = _uiState.value.restPort.toString()
             )
+            endRestPortEditingWindow()
             return false
         }
 
+        endRestPortEditingWindow()
         viewModelScope.launch {
             updateRestPortUseCase(port)
         }
@@ -329,6 +372,7 @@ class MainViewModel @Inject constructor(
 
     override fun onCleared() {
         saveSettingsJob?.cancel()
+        restPortEditingUnlockJob?.cancel()
         super.onCleared()
     }
 }

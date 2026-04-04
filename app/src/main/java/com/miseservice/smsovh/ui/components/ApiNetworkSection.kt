@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -63,20 +62,13 @@ fun ApiNetworkSection(
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(onDone = {
-            // Validation uniquement via le bouton OK explicite.
+            onRestPortCommit()
         }),
         isError = uiState.restPortError != null,
         supportingText = {
             Text(uiState.restPortError ?: stringResource(R.string.rest_port_hint))
         }
     )
-    Spacer(Modifier.height(8.dp))
-    Button(
-        onClick = onRestPortCommit,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(text = stringResource(android.R.string.ok))
-    }
     Spacer(Modifier.height(10.dp))
 
     val ipValue = if (uiState.isIpValid) uiState.hostIp else stringResource(R.string.network_not_connected)
