@@ -43,7 +43,8 @@ fun OvhApiConfigSection(
         onValueChange = onOvhAppKeyChange,
         label = { Text("Application Key") },
         modifier = Modifier.fillMaxWidth(),
-        singleLine = true
+        singleLine = true,
+        colors = smsOvhTextFieldColors()
     )
     Spacer(Modifier.height(10.dp))
 
@@ -53,7 +54,8 @@ fun OvhApiConfigSection(
         label = { Text("Application Secret") },
         visualTransformation = PasswordVisualTransformation(),
         modifier = Modifier.fillMaxWidth(),
-        singleLine = true
+        singleLine = true,
+        colors = smsOvhTextFieldColors()
     )
     Spacer(Modifier.height(10.dp))
 
@@ -63,7 +65,8 @@ fun OvhApiConfigSection(
         label = { Text("Consumer Key") },
         visualTransformation = PasswordVisualTransformation(),
         modifier = Modifier.fillMaxWidth(),
-        singleLine = true
+        singleLine = true,
+        colors = smsOvhTextFieldColors()
     )
     Spacer(Modifier.height(10.dp))
 
@@ -72,7 +75,8 @@ fun OvhApiConfigSection(
         onValueChange = onOvhServiceNameChange,
         label = { Text("Service SMS (compte OVH)") },
         modifier = Modifier.fillMaxWidth(),
-        singleLine = true
+        singleLine = true,
+        colors = smsOvhTextFieldColors()
     )
     Spacer(Modifier.height(10.dp))
 
@@ -82,6 +86,7 @@ fun OvhApiConfigSection(
         label = { Text("Endpoint OVH") },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
+        colors = smsOvhTextFieldColors(),
         supportingText = { Text("ovh-eu, ovh-ca, ovh-us") }
     )
     Spacer(Modifier.height(10.dp))
@@ -91,14 +96,15 @@ fun OvhApiConfigSection(
         onValueChange = onOvhCountryPrefixChange,
         label = { Text("Prefixe pays (recipient)") },
         modifier = Modifier.fillMaxWidth(),
-        singleLine = true
+        singleLine = true,
+        colors = smsOvhTextFieldColors()
     )
     Spacer(Modifier.height(8.dp))
 
     Text(
         text = "Les cles s'obtiennent sur api.ovh.com/createToken. Droit requis: POST /sms/{serviceName}/jobs",
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        color = colorResource(id = R.color.white)
     )
 }
 

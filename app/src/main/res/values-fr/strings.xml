@@ -93,6 +93,9 @@
     <string name="service_stopping">Arrêt du service…</string>
     <string name="service_started_success">✅ Service démarré</string>
     <string name="service_stopped_success">✅ Service arrêté</string>
+    <string name="foreground_service_channel_name">Service OVH SMS</string>
+    <string name="foreground_service_title">Service actif OVH SMS</string>
+    <string name="foreground_service_message">Protection contre la mise en veille</string>
     <string name="location_permission_required_title">Permission de localisation requise</string>
     <string name="location_permission_required_message">"L'application a besoin de la localisation pour afficher les informations réseau. Veuillez l'accorder."</string>
     <string name="location_permission_denied_message">"La permission de localisation est refusée. Vous pouvez l'activer depuis les paramètres."</string>
@@ -104,6 +107,7 @@
     <string name="location_loading">En cours…</string>
     <string name="battery_optimization_title">"Désactiver l'optimisation de batterie"</string>
     <string name="battery_optimization_message">"Pour garantir la fiabilité de l'envoi de SMS, veuillez désactiver l'optimisation de batterie pour cette application."</string>
+    <string name="battery_optimization_disabled_success">✅ Optimisation batterie désactivée</string>
     <string name="smshelper_number_empty">Numéro vide</string>
     <string name="smshelper_message_empty">Message vide</string>
     <string name="smshelper_image_empty">Image vide</string>

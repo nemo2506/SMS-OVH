@@ -67,6 +67,7 @@ fun ApiNetworkSection(
             onRestPortCommit()
         }),
         isError = uiState.restPortError != null,
+        colors = smsOvhTextFieldColors(),
         supportingText = {
             Text(uiState.restPortError ?: stringResource(R.string.rest_port_hint))
         }
@@ -130,7 +131,7 @@ fun ApiNetworkSection(
             } else {
                 Text(
                     text = stringResource(R.string.endpoint_wifi_hint),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = colorResource(id = R.color.white),
                     fontSize = 15.sp
                 )
             }
@@ -174,21 +175,6 @@ fun ApiNetworkSection(
         label = { Text(stringResource(R.string.location_label), fontSize = emphasizedLabelSize) }
     )
 
-    Spacer(Modifier.height(10.dp))
-    val networkLine = "${stringResource(R.string.network_label)} ${if (uiState.isIpValid) "🟢" else "🔴"}"
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onCopy("network", networkLine) },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = networkLine,
-            color = colorResource(id = R.color.smsovh_primary),
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp
-        )
-    }
 
     Spacer(Modifier.height(24.dp))
 }

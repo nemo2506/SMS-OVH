@@ -93,6 +93,9 @@
     <string name="service_stopping">Stopping service…</string>
     <string name="service_started_success">✅ Service started</string>
     <string name="service_stopped_success">✅ Service stopped</string>
+    <string name="foreground_service_channel_name">OVH SMS Service</string>
+    <string name="foreground_service_title">OVH SMS service active</string>
+    <string name="foreground_service_message">Sleep protection enabled</string>
     <string name="location_permission_required_title">Location permission required</string>
     <string name="location_permission_required_message">The app needs location access to display network information. Please allow it.</string>
     <string name="location_permission_denied_message">Location permission was denied. You can enable it from settings.</string>
@@ -104,6 +107,7 @@
     <string name="location_loading">Loading…</string>
     <string name="battery_optimization_title">Disable battery optimization</string>
     <string name="battery_optimization_message">To ensure reliable SMS sending, please disable battery optimization for this app.</string>
+    <string name="battery_optimization_disabled_success">✅ Battery optimization disabled</string>
     <string name="smshelper_number_empty">Number is empty</string>
     <string name="smshelper_message_empty">Message is empty</string>
     <string name="smshelper_image_empty">Image is empty</string>

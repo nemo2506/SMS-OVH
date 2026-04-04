@@ -53,7 +53,8 @@ fun SendSmsSection(
             }
         },
         modifier = Modifier.fillMaxWidth(),
-        enabled = enabled
+        enabled = enabled,
+        colors = smsOvhButtonColors()
     ) {
         Text(stringResource(R.string.send_sms), fontSize = 15.sp)
     }

@@ -39,7 +39,8 @@ fun OvhSmsFormSection(
         onValueChange = onSenderIdChange,
         label = { Text(stringResource(R.string.sender_id_hint), fontSize = formLabelSize) },
         modifier = Modifier.fillMaxWidth(),
-        singleLine = true
+        singleLine = true,
+        colors = smsOvhTextFieldColors()
     )
     Spacer(Modifier.height(14.dp))
     OutlinedTextField(
@@ -48,7 +49,8 @@ fun OvhSmsFormSection(
         label = { Text(stringResource(R.string.recipient_hint), fontSize = formLabelSize) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+        colors = smsOvhTextFieldColors()
     )
     Spacer(Modifier.height(14.dp))
     OutlinedTextField(
@@ -57,7 +59,8 @@ fun OvhSmsFormSection(
         label = { Text(stringResource(R.string.message_hint), fontSize = formLabelSize) },
         modifier = Modifier.fillMaxWidth(),
         maxLines = 8,
-        minLines = 4
+        minLines = 4,
+        colors = smsOvhTextFieldColors()
     )
     Spacer(Modifier.height(14.dp))
 }

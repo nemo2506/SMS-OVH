@@ -3,6 +3,7 @@ package com.miseservice.smsovh.ui
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
 import androidx.activity.compose.setContent
@@ -16,14 +17,15 @@ import androidx.core.net.toUri
 import android.Manifest
 import androidx.activity.result.contract.ActivityResultContracts
 import android.app.AlertDialog
-import android.widget.Toast
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
+import com.miseservice.smsovh.util.BatteryOptimizationHelper
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var requestSendSmsPermission: ActivityResultLauncher<String>
+    private lateinit var requestIgnoreBatteryOptimization: ActivityResultLauncher<Intent>
     private var pendingSendSmsAfterPermission: Boolean = false
 
     // Ouvre la page des paramètres de l'application pour accorder la permission manuellement
@@ -46,9 +48,31 @@ class MainActivity : AppCompatActivity() {
         requestSendSmsPermission.launch(Manifest.permission.SEND_SMS)
     }
 
+    private fun maybeRequestBatteryOptimizationExemption() {
+        val intent = BatteryOptimizationHelper.buildIgnoreBatteryOptimizationIntent(this) ?: return
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.battery_optimization_title))
+            .setMessage(getString(R.string.battery_optimization_message))
+            .setPositiveButton(getString(R.string.allow)) { _, _ ->
+                requestIgnoreBatteryOptimization.launch(intent)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         super.onCreate(savedInstanceState)
+
+        requestIgnoreBatteryOptimization = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            val granted = BatteryOptimizationHelper.isIgnoringBatteryOptimizations(this)
+            if (granted) {
+                Toast.makeText(this, getString(R.string.battery_optimization_disabled_success), Toast.LENGTH_SHORT).show()
+            }
+        }
+
         requestSendSmsPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 if (pendingSendSmsAfterPermission) {
@@ -87,6 +111,8 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+
+        maybeRequestBatteryOptimizationExemption()
     }
 
     override fun onStop() {

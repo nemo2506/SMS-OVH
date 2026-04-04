@@ -26,7 +26,8 @@ fun CopyableReadOnlyField(
             modifier = Modifier.fillMaxWidth(),
             readOnly = true,
             singleLine = true,
-            enabled = false
+            enabled = true,
+            colors = smsOvhTextFieldColors()
         )
     }
 }

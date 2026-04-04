@@ -10,6 +10,7 @@ import android.location.LocationManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -20,7 +21,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -31,6 +35,7 @@ import com.miseservice.smsovh.ui.components.OvhApiConfigSection
 import com.miseservice.smsovh.ui.components.OvhSmsFormSection
 import com.miseservice.smsovh.ui.components.SendSmsSection
 import com.miseservice.smsovh.ui.components.ServiceStatusRow
+import com.miseservice.smsovh.ui.components.smsOvhButtonColors
 import com.miseservice.smsovh.ui.components.dialogs.LocationPermissionDeniedDialog
 import com.miseservice.smsovh.ui.components.dialogs.LocationPermissionRequiredDialog
 import com.miseservice.smsovh.util.NetworkInfoProvider
@@ -83,7 +88,7 @@ fun MainScreen(
     val senderId = uiState.senderId
     val recipient = uiState.recipient
     val message = uiState.message
-    val ovhTabTitles = listOf("Composer", "Config API")
+    val ovhTabTitles = listOf("Composer", "Config")
     val selectedTabIndex = uiState.selectedTabIndex.coerceIn(0, ovhTabTitles.lastIndex)
     val activity = context as? android.app.Activity
 
@@ -275,13 +280,30 @@ fun MainScreen(
                     Button(
                         onClick = { viewModel.sendOvhSms() },
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = uiState.canSendOvhSms
+                        enabled = uiState.canSendOvhSms,
+                        colors = smsOvhButtonColors()
                     ) {
                         Text("Envoyer via OVH API")
                     }
                 }
 
                 1 -> {
+                    val networkLine = "${context.getString(R.string.network_label)} ${if (uiState.isIpValid) "🟢" else "🔴"}"
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { copyToClipboard("network", networkLine) }
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = networkLine,
+                            color = colorResource(id = R.color.white),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+
                     OvhApiConfigSection(
                         ovhAppKey = uiState.ovhAppKey,
                         ovhAppSecret = uiState.ovhAppSecret,
@@ -313,7 +335,6 @@ fun MainScreen(
                     )
                 }
             }
-            // Suppression de l'affichage des logs/statuts
         }
     }
 }
