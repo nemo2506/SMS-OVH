@@ -158,9 +158,10 @@ object SmsHelper {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
             )
 
+            @Suppress("UNNECESSARY_SAFE_CALL")
             fun cleanup() {
                 runCatching { receiver?.let { context.unregisterReceiver(it) } }
-                pduFile?.let { runCatching { it.delete() } }
+                runCatching { pduFile?.delete() }
                 runCatching {
                     if (networkBound) {
                         connectivityManager?.bindProcessToNetwork(null)
@@ -183,7 +184,7 @@ object SmsHelper {
                     false,
                     JSONObject().apply {
                         put("success", false)
-                        put("error", "Timeout MMS (30s depasse)")
+                        put("error", string(context, R.string.smshelper_mms_timeout, 30))
                         put("type", string(context, R.string.smshelper_mms_type))
                     }
                 )

@@ -57,6 +57,9 @@
     <string name="rest_server_started_message">✅ Serveur REST démarré sur le port %1$d</string>
     <string name="rest_server_port_in_use_message">❌ Port %1$d déjà utilisé</string>
     <string name="rest_server_start_error_message">❌ Échec du démarrage du serveur REST : %1$s</string>
+    <string name="rest_server_unauthorized_log_message">Requête non autorisée : %1$s %2$s</string>
+    <string name="rest_server_missing_body_log_message">Corps de requête manquant : %1$s %2$s</string>
+    <string name="rest_server_endpoint_not_found_log_message">Endpoint introuvable : %1$s %2$s</string>
     <string name="rest_server_stopped_message">✅ Serveur REST arrêté</string>
     <string name="unauthorized_request_message">❌ Requête non autorisée : jeton manquant ou invalide</string>
     <string name="missing_request_body_message">❌ Corps de requête manquant</string>
@@ -67,11 +70,19 @@
     <string name="missing_destinataire_or_text_message">❌ Destinataire ou texte manquant</string>
     <string name="invalid_phone_number_message">❌ Numéro de téléphone invalide : %1$s</string>
     <string name="missing_destinataire_or_image_message">❌ Destinataire ou image manquant</string>
+    <string name="rest_server_missing_destinataire_or_text_log_message">Destinataire ou texte manquant</string>
+    <string name="rest_server_invalid_phone_number_log_message">Numéro de téléphone invalide : %1$s</string>
+    <string name="rest_server_missing_destinataire_or_image_log_message">Destinataire ou image manquant</string>
+    <string name="rest_server_invalid_phone_number_simple_message">Numéro de téléphone invalide</string>
     <string name="sms_sent_with_success_message">✅ SMS envoyé avec succès vers %1$s</string>
     <string name="sms_sent_in_parts_message">✅ SMS envoyé en %1$d partie(s)</string>
     <string name="mms_sent_with_success_message">✅ MMS envoyé avec succès vers %1$s</string>
+    <string name="rest_server_sms_sent_success_message">SMS envoyé avec succès</string>
+    <string name="rest_server_mms_sent_success_message">MMS envoyé avec succès</string>
+    <string name="rest_server_mms_sent_with_image_message">✅ MMS envoyé avec image</string>
     <string name="missing_log_message">❌ Message de log manquant</string>
     <string name="log_saved_message">✅ Log reçu et enregistré</string>
+    <string name="rest_server_log_saved_response_message">Log enregistré</string>
     <string name="service_start_failed_message">❌ Impossible de démarrer le service : %1$s</string>
     <string name="service_stop_failed_message">"❌ Impossible d'arrêter le service : %1$s"</string>
     <string name="feedback_error_with_message">❌ %1$s</string>
@@ -112,6 +123,7 @@
     <string name="smshelper_mms_error_unable_connect">Connexion MMSC impossible</string>
     <string name="smshelper_mms_error_unspecified">Erreur MMS non spécifiée</string>
     <string name="smshelper_mms_error_code">Échec envoi MMS (code=%1$d)</string>
+    <string name="smshelper_mms_timeout">Délai MMS dépassé (%1$d s)</string>
     <string name="smshelper_mms_triggered_log">MMS envoi direct déclenché vers %1$s (%2$d octets)</string>
     <string name="smshelper_sms_type">SMS</string>
     <string name="smshelper_mms_type">MMS</string>

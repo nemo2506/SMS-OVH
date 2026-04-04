@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import com.miseservice.smsovh.R
 import com.miseservice.smsovh.domain.usecase.SendRestMessageUseCase
 import com.miseservice.smsovh.model.SendMessageRequest
 import com.miseservice.smsovh.model.SendResult
@@ -36,6 +37,10 @@ class SmsRestServer @Inject constructor(
         const val API_VERSION = "1.0"
     }
 
+    private fun string(resId: Int, vararg args: Any): String {
+        return if (args.isEmpty()) context.getString(resId) else context.getString(resId, *args)
+    }
+
     @Volatile
     private var serverStarted = false
 
@@ -59,17 +64,17 @@ class SmsRestServer @Inject constructor(
             server.start()
             activeServer = server
             serverStarted = true
-            emitEvent(RestServerEventType.SERVER_START_SUCCESS, "Serveur REST demarre sur le port $currentPort")
+            emitEvent(RestServerEventType.SERVER_START_SUCCESS, string(R.string.rest_server_started_message, currentPort))
             true
         } catch (_: BindException) {
             activeServer = null
             serverStarted = false
-            emitEvent(RestServerEventType.SERVER_PORT_IN_USE, "Port $currentPort deja utilise")
+            emitEvent(RestServerEventType.SERVER_PORT_IN_USE, string(R.string.rest_server_port_in_use_message, currentPort))
             false
         } catch (_: Exception) {
             activeServer = null
             serverStarted = false
-            emitEvent(RestServerEventType.SERVER_START_ERROR, "Echec demarrage serveur")
+            emitEvent(RestServerEventType.SERVER_START_ERROR, string(R.string.rest_server_start_error_message, ""))
             false
         }
     }
@@ -107,10 +112,15 @@ class SmsRestServer @Inject constructor(
             val expectedToken = "Bearer ${ApiTokenManager.getToken(context)}"
 
             if (authHeader == null || authHeader != expectedToken) {
-                saveApiLog("❌ Unauthorized ${session.method} ${session.uri}")
+                saveApiLog(
+                    string(
+                        R.string.feedback_error_with_message,
+                        string(R.string.rest_server_unauthorized_log_message, session.method.name, session.uri)
+                    )
+                )
                 val json = JSONObject()
                 json.put("success", false)
-                json.put("error", "Unauthorized: missing or invalid token")
+                json.put("error", string(R.string.unauthorized_request_message))
                 json.put("timestamp", System.currentTimeMillis())
                 return newFixedLengthResponse(Response.Status.UNAUTHORIZED, "application/json", json.toString())
             }
@@ -121,8 +131,13 @@ class SmsRestServer @Inject constructor(
                     session.parseBody(map)
                     val body = map["postData"]
                     if (body.isNullOrBlank()) {
-                        saveApiLog("❌ Missing body POST /api/send-message")
-                        return createErrorResponse(Response.Status.BAD_REQUEST, "Missing request body", 400)
+                        saveApiLog(
+                            string(
+                                R.string.feedback_error_with_message,
+                                string(R.string.rest_server_missing_body_log_message, session.method.name, session.uri)
+                            )
+                        )
+                        return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_request_body_message), 400)
                     }
                     handleSendMessage(body)
                 }
@@ -131,8 +146,13 @@ class SmsRestServer @Inject constructor(
                     session.parseBody(map)
                     val body = map["postData"]
                     if (body.isNullOrBlank()) {
-                        saveApiLog("❌ Missing body POST /api/send-sms")
-                        return createErrorResponse(Response.Status.BAD_REQUEST, "Missing request body", 400)
+                        saveApiLog(
+                            string(
+                                R.string.feedback_error_with_message,
+                                string(R.string.rest_server_missing_body_log_message, session.method.name, session.uri)
+                            )
+                        )
+                        return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_request_body_message), 400)
                     }
                     handleSendSms(body)
                 }
@@ -141,8 +161,13 @@ class SmsRestServer @Inject constructor(
                     session.parseBody(map)
                     val body = map["postData"]
                     if (body.isNullOrBlank()) {
-                        saveApiLog("❌ Missing body POST /api/send-mms")
-                        return createErrorResponse(Response.Status.BAD_REQUEST, "Missing request body", 400)
+                        saveApiLog(
+                            string(
+                                R.string.feedback_error_with_message,
+                                string(R.string.rest_server_missing_body_log_message, session.method.name, session.uri)
+                            )
+                        )
+                        return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_request_body_message), 400)
                     }
                     handleSendMms(body)
                 }
@@ -154,8 +179,13 @@ class SmsRestServer @Inject constructor(
                     session.parseBody(map)
                     val body = map["postData"]
                     if (body.isNullOrBlank()) {
-                        saveApiLog("❌ Missing body POST /api/logs")
-                        return createErrorResponse(Response.Status.BAD_REQUEST, "Missing request body", 400)
+                        saveApiLog(
+                            string(
+                                R.string.feedback_error_with_message,
+                                string(R.string.rest_server_missing_body_log_message, session.method.name, session.uri)
+                            )
+                        )
+                        return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_request_body_message), 400)
                     }
                     handleLogMessage(body)
                 }
@@ -166,13 +196,19 @@ class SmsRestServer @Inject constructor(
                     handleBatteryStatus()
                 }
                 else -> {
-                    saveApiLog("❌ Endpoint not found ${session.method} ${session.uri}")
-                    createErrorResponse(Response.Status.NOT_FOUND, "Endpoint not found", 404)
+                    saveApiLog(
+                        string(
+                            R.string.feedback_error_with_message,
+                            string(R.string.rest_server_endpoint_not_found_log_message, session.method.name, session.uri)
+                        )
+                    )
+                    createErrorResponse(Response.Status.NOT_FOUND, string(R.string.endpoint_not_found_message), 404)
                 }
             }
         } catch (e: Exception) {
-            saveApiLog("❌ Internal server error: ${e.message}")
-            return createErrorResponse(Response.Status.INTERNAL_ERROR, "Internal server error: ${e.message}")
+            val errorMessage = e.message ?: ""
+            saveApiLog(string(R.string.feedback_error_with_message, string(R.string.internal_server_error_message, errorMessage)))
+            return createErrorResponse(Response.Status.INTERNAL_ERROR, string(R.string.internal_server_error_message, errorMessage))
         }
     }
 
@@ -193,7 +229,7 @@ class SmsRestServer @Inject constructor(
             )
 
             if (batteryIntent == null) {
-                return createErrorResponse(Response.Status.INTERNAL_ERROR, "Battery data unavailable")
+                return createErrorResponse(Response.Status.INTERNAL_ERROR, string(R.string.battery_data_unavailable_message))
             }
 
             val level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
@@ -201,7 +237,7 @@ class SmsRestServer @Inject constructor(
             val status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
 
             if (level < 0 || scale <= 0) {
-                return createErrorResponse(Response.Status.INTERNAL_ERROR, "Invalid battery values")
+                return createErrorResponse(Response.Status.INTERNAL_ERROR, string(R.string.invalid_battery_values_message))
             }
 
             val percent = (level * 100) / scale
@@ -217,7 +253,7 @@ class SmsRestServer @Inject constructor(
 
             newFixedLengthResponse(Response.Status.OK, "application/json", json.toString())
         } catch (e: Exception) {
-            createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
+            createErrorResponse(Response.Status.INTERNAL_ERROR, string(R.string.internal_server_error_message, e.message ?: ""))
         }
     }
 
@@ -235,15 +271,21 @@ class SmsRestServer @Inject constructor(
 
             // Valide les champs
             if (destinataire.isBlank() || text.isBlank()) {
-                emitEvent(RestServerEventType.SMS_SENT_ERROR, "❌ Erreur: destinataire ou texte manquants")
-                return createErrorResponse(Response.Status.BAD_REQUEST, "Missing destinataire or text", 400)
+                emitEvent(
+                    RestServerEventType.SMS_SENT_ERROR,
+                    string(R.string.feedback_error_with_message, string(R.string.rest_server_missing_destinataire_or_text_log_message))
+                )
+                return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_destinataire_or_text_message), 400)
             }
 
             // Valide et formate le numéro
             val normalizedNumber = PhoneNumberValidator.normalize(destinataire)
                 ?: run {
-                    emitEvent(RestServerEventType.SMS_SENT_ERROR, "❌ Erreur: numéro invalide ($destinataire)")
-                    return createErrorResponse(Response.Status.BAD_REQUEST, "Invalid phone number: $destinataire", 400)
+                    emitEvent(
+                        RestServerEventType.SMS_SENT_ERROR,
+                        string(R.string.feedback_error_with_message, string(R.string.rest_server_invalid_phone_number_log_message, destinataire))
+                    )
+                    return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.invalid_phone_number_message, destinataire), 400)
                 }
 
             val request = SendMessageRequest(senderId, normalizedNumber, text, base64Jpeg)
@@ -252,26 +294,30 @@ class SmsRestServer @Inject constructor(
             return when (result) {
                 is SendResult.Success -> {
                     val messageType = if (base64Jpeg.isNullOrBlank()) "SMS" else "MMS"
-                    val eventMessage = "✅ $messageType envoyé vers $normalizedNumber"
+                    val eventMessage = if (messageType == string(R.string.smshelper_sms_type)) {
+                        string(R.string.sms_sent_with_success_message, normalizedNumber)
+                    } else {
+                        string(R.string.mms_sent_with_success_message, normalizedNumber)
+                    }
                     emitEvent(RestServerEventType.SMS_SENT_SUCCESS, eventMessage)
                     saveApiLog(eventMessage)
-                    createSuccessResponse("$messageType envoyé avec succès vers $normalizedNumber", mapOf(
+                    createSuccessResponse(eventMessage, mapOf(
                         "type" to messageType,
                         "phoneNumber" to normalizedNumber
                     ))
                 }
                 is SendResult.Error -> {
-                    val eventMessage = "❌ ${result.message}"
+                    val eventMessage = string(R.string.feedback_error_with_message, result.message)
                     emitEvent(RestServerEventType.SMS_SENT_ERROR, eventMessage)
                     saveApiLog(eventMessage)
                     createErrorResponse(Response.Status.INTERNAL_ERROR, result.message, result.code)
                 }
             }
         } catch (e: Exception) {
-            val eventMessage = "❌ Erreur: ${e.message}"
+            val eventMessage = string(R.string.feedback_error_with_message, e.message ?: "")
             emitEvent(RestServerEventType.SMS_SENT_ERROR, eventMessage)
             saveApiLog(eventMessage)
-            return createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
+            return createErrorResponse(Response.Status.INTERNAL_ERROR, string(R.string.internal_server_error_message, e.message ?: ""))
         }
     }
 
@@ -283,11 +329,11 @@ class SmsRestServer @Inject constructor(
             val text = json.optString("text", "").trim()
 
             if (destinataire.isBlank() || text.isBlank()) {
-                return createErrorResponse(Response.Status.BAD_REQUEST, "Missing destinataire or text", 400)
+                return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_destinataire_or_text_message), 400)
             }
 
             val normalizedNumber = PhoneNumberValidator.normalize(destinataire)
-                ?: return createErrorResponse(Response.Status.BAD_REQUEST, "Invalid phone number", 400)
+                ?: return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.rest_server_invalid_phone_number_simple_message), 400)
 
             // Vérifie la longueur du SMS
             val partCount = OvhSmsConfig.calculateSmsPartCount(text)
@@ -296,26 +342,26 @@ class SmsRestServer @Inject constructor(
 
             return when (result) {
                 is SendResult.Success -> {
-                    val eventMessage = "✅ SMS envoyé en $partCount partie(s)"
+                    val eventMessage = string(R.string.sms_sent_in_parts_message, partCount)
                     emitEvent(RestServerEventType.SMS_SENT_SUCCESS, eventMessage)
                     saveApiLog(eventMessage)
-                    createSuccessResponse("SMS envoyé avec succès", mapOf(
+                    createSuccessResponse(string(R.string.rest_server_sms_sent_success_message), mapOf(
                         "type" to "SMS",
                         "parts" to partCount.toString(),
                         "characters" to text.length.toString()
                     ))
                 }
                 is SendResult.Error -> {
-                    val eventMessage = "❌ ${result.message}"
+                    val eventMessage = string(R.string.feedback_error_with_message, result.message)
                     emitEvent(RestServerEventType.SMS_SENT_ERROR, eventMessage)
                     saveApiLog(eventMessage)
                     createErrorResponse(Response.Status.INTERNAL_ERROR, result.message, result.code)
                 }
             }
         } catch (e: Exception) {
-            val eventMessage = "❌ Erreur: ${e.message}"
+            val eventMessage = string(R.string.feedback_error_with_message, e.message ?: "")
             saveApiLog(eventMessage)
-            return createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
+            return createErrorResponse(Response.Status.INTERNAL_ERROR, string(R.string.internal_server_error_message, e.message ?: ""))
         }
     }
 
@@ -328,36 +374,36 @@ class SmsRestServer @Inject constructor(
             val base64Jpeg = json.optString("base64Jpeg", "").ifBlank { null }
 
             if (destinataire.isBlank() || base64Jpeg.isNullOrBlank()) {
-                return createErrorResponse(Response.Status.BAD_REQUEST, "Missing destinataire or image", 400)
+                return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_destinataire_or_image_message), 400)
             }
 
             val normalizedNumber = PhoneNumberValidator.normalize(destinataire)
-                ?: return createErrorResponse(Response.Status.BAD_REQUEST, "Invalid phone number", 400)
+                ?: return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.invalid_phone_number_message), 400)
 
             val request = SendMessageRequest(senderId, normalizedNumber, text, base64Jpeg)
             val result = runBlocking { sendRestMessageUseCase(request) }
 
             return when (result) {
                 is SendResult.Success -> {
-                    val eventMessage = "✅ MMS envoyé avec image"
+                    val eventMessage = string(R.string.rest_server_mms_sent_with_image_message)
                     emitEvent(RestServerEventType.SMS_SENT_SUCCESS, eventMessage)
                     saveApiLog(eventMessage)
-                    createSuccessResponse("MMS envoyé avec succès", mapOf(
+                    createSuccessResponse(string(R.string.rest_server_mms_sent_success_message), mapOf(
                         "type" to "MMS",
                         "imageSize" to base64Jpeg.length.toString()
                     ))
                 }
                 is SendResult.Error -> {
-                    val eventMessage = "❌ ${result.message}"
+                    val eventMessage = string(R.string.feedback_error_with_message, result.message)
                     emitEvent(RestServerEventType.SMS_SENT_ERROR, eventMessage)
                     saveApiLog(eventMessage)
                     createErrorResponse(Response.Status.INTERNAL_ERROR, result.message, result.code)
                 }
             }
         } catch (e: Exception) {
-            val eventMessage = "❌ Erreur: ${e.message}"
+            val eventMessage = string(R.string.feedback_error_with_message, e.message ?: "")
             saveApiLog(eventMessage)
-            return createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
+            return createErrorResponse(Response.Status.INTERNAL_ERROR, string(R.string.internal_server_error_message, e.message ?: ""))
         }
     }
 
@@ -383,7 +429,7 @@ class SmsRestServer @Inject constructor(
             }
             newFixedLengthResponse(Response.Status.OK, "application/json", json.toString())
         } catch (e: Exception) {
-            createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
+            createErrorResponse(Response.Status.INTERNAL_ERROR, string(R.string.internal_server_error_message, e.message ?: ""))
         }
     }
 
@@ -392,19 +438,20 @@ class SmsRestServer @Inject constructor(
             val json = JSONObject(body)
             val message = json.optString("message", "").trim()
             if (message.isBlank()) {
-                return createErrorResponse(Response.Status.BAD_REQUEST, "Missing log message", 400)
+                return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_log_message), 400)
             }
 
             runBlocking {
                 logDao.insertLog(com.miseservice.smsovh.data.local.LogEntity(message = message))
                 logDao.deleteOldLogs()
-                emitEvent(RestServerEventType.LOG_RECEIVED_SUCCESS, "✅ Log reçu et enregistré")
+                emitEvent(RestServerEventType.LOG_RECEIVED_SUCCESS, string(R.string.log_saved_message))
             }
 
-            return createSuccessResponse("Log enregistré", mapOf("message" to message))
+            return createSuccessResponse(string(R.string.rest_server_log_saved_response_message), mapOf("message" to message))
         } catch (e: Exception) {
-            emitEvent(RestServerEventType.LOG_RECEIVED_ERROR, "❌ ${e.message}")
-            return createErrorResponse(Response.Status.INTERNAL_ERROR, "Error: ${e.message}")
+            val eventMessage = string(R.string.feedback_error_with_message, e.message ?: "")
+            emitEvent(RestServerEventType.LOG_RECEIVED_ERROR, eventMessage)
+            return createErrorResponse(Response.Status.INTERNAL_ERROR, string(R.string.internal_server_error_message, e.message ?: ""))
         }
     }
 
