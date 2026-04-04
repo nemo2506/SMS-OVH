@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="20dp"
+        android:background="@color/smsovh_surface_alt">
 
         <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
         <LinearLayout
@@ -20,7 +21,8 @@
             android:orientation="vertical"
             android:gravity="center"
             android:paddingTop="24dp"
-            android:paddingBottom="32dp">
+            android:paddingBottom="32dp"
+            android:background="@color/smsovh_primary_container">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -37,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/header_ovh"
                 android:textSize="13sp"
-                android:textColor="@color/smsovh_on_dark"
+                android:textColor="@color/smsovh_on_primary"
                 android:letterSpacing="0.08"/>
         </LinearLayout>
 
