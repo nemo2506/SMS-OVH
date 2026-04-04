@@ -1,4 +1,4 @@
-# 🚀 SMS/MMS Only Or WITH OVH — Application Android Sender ID Alphanumérique
+# 🚀 SMS/MMS Or WITH OVH — Application Android Sender ID Alphanumérique
 
 ![Android MVVM](https://img.shields.io/badge/Android-MVVM-green?style=for-the-badge)
 ![Sécurité EncryptedSharedPreferences](https://img.shields.io/badge/Sécurité-EncryptedSharedPreferences-blue?style=for-the-badge)
