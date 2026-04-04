@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="com.miseservice.smsovh.SEND_SMS_PERMISSION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Localisation pour l'affichage des données réseau -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />

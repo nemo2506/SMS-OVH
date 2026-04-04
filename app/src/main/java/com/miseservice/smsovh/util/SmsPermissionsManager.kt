@@ -3,81 +3,88 @@ package com.miseservice.smsovh.util
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.content.ContextCompat
 
-/**
- * Gère les permissions requises pour l'envoi de SMS et MMS.
- */
 object SmsPermissionsManager {
 
     /**
-     * Liste des permissions nécessaires à l'envoi (sans lecture de boîte SMS).
+     * Permissions réellement demandables à l'utilisateur.
+     * - CHANGE_NETWORK_STATE : permission système, ne jamais la demander (toujours refusée)
+     * - RECEIVE_MMS : réservée à l'app SMS par défaut, exclue sauf cas spécifique
      */
     val REQUIRED_PERMISSIONS: List<String> = buildList {
         add(Manifest.permission.SEND_SMS)
-        add(Manifest.permission.INTERNET)
-        add(Manifest.permission.ACCESS_NETWORK_STATE)
-        add(Manifest.permission.CHANGE_NETWORK_STATE)
         add(Manifest.permission.READ_PHONE_STATE)
 
-        // RECEIVE_MMS n'est utile que pour la réception, conservée ici pour compatibilité.
-        add(Manifest.permission.RECEIVE_MMS)
+        // INTERNET et ACCESS_NETWORK_STATE sont des "normal permissions" :
+        // accordées automatiquement si déclarées dans le manifest, inutile de les demander
+        // au runtime — mais on les vérifie quand même par sécurité.
+        add(Manifest.permission.INTERNET)
+        add(Manifest.permission.ACCESS_NETWORK_STATE)
+
+        // POST_NOTIFICATIONS requis depuis Android 13 pour les notifications de statut
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     /**
-     * Permissions optionnelles pour une expérience améliorée
+     * Permissions normales (accordées automatiquement via le manifest).
+     * Ne doivent PAS être demandées au runtime, mais peuvent être vérifiées.
      */
-    @Suppress("unused")
-    val OPTIONAL_PERMISSIONS = listOf(
-        Manifest.permission.VIBRATE,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
+    val NORMAL_PERMISSIONS = listOf(
+        Manifest.permission.INTERNET,
+        Manifest.permission.ACCESS_NETWORK_STATE,
+        // CHANGE_NETWORK_STATE : déclarée dans le manifest uniquement pour MMS,
+        // Android l'accorde automatiquement aux apps non-système en mode "best effort"
+        Manifest.permission.CHANGE_NETWORK_STATE
     )
 
     /**
-     * Vérifie si une permission est accordée
+     * Permissions à demander au runtime uniquement.
+     * Exclut les normal permissions inutiles à demander explicitement.
      */
-    fun hasPermission(context: Context, permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+    val RUNTIME_PERMISSIONS: List<String> = buildList {
+        add(Manifest.permission.SEND_SMS)
+        add(Manifest.permission.READ_PHONE_STATE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
-    /**
-     * Vérifie si toutes les permissions requises sont accordées
-     */
-    @Suppress("unused")
+    fun hasPermission(context: Context, permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context, permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
     fun hasAllRequiredPermissions(context: Context): Boolean {
         return REQUIRED_PERMISSIONS.all { hasPermission(context, it) }
     }
 
     /**
-     * Retourne la liste des permissions manquantes
+     * Retourne uniquement les permissions runtime manquantes.
+     * Les normal permissions (INTERNET, etc.) sont exclues car elles ne peuvent
+     * pas être demandées via requestPermissions().
      */
-    fun getMissingPermissions(context: Context): List<String> {
-        return REQUIRED_PERMISSIONS.filter { !hasPermission(context, it) }
+    fun getMissingRuntimePermissions(context: Context): List<String> {
+        return RUNTIME_PERMISSIONS.filter { !hasPermission(context, it) }
     }
 
-    /**
-     * Convertit une liste de permissions manquantes en array pour demande de permission
-     */
-    @Suppress("unused")
     fun getMissingPermissionsArray(context: Context): Array<String> {
-        return getMissingPermissions(context).toTypedArray()
+        return getMissingRuntimePermissions(context).toTypedArray()
     }
 
-    /**
-     * Vérifie les permissions SMS critiques pour l'envoi
-     */
     fun canSendSms(context: Context): Boolean {
-        return hasPermission(context, Manifest.permission.SEND_SMS) &&
-               hasPermission(context, Manifest.permission.INTERNET)
+        return hasPermission(context, Manifest.permission.SEND_SMS)
     }
 
-    /**
-     * Vérifie les permissions pour l'envoi de MMS
-     */
     fun canSendMms(context: Context): Boolean {
+        // CHANGE_NETWORK_STATE et ACCESS_NETWORK_STATE sont des normal permissions :
+        // si elles sont dans le manifest, elles sont accordées. Pas besoin de les tester
+        // comme bloquant l'envoi MMS.
         return canSendSms(context) &&
-               hasPermission(context, Manifest.permission.CHANGE_NETWORK_STATE) &&
-               hasPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)
+                hasPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)
     }
 }
