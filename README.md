@@ -45,7 +45,7 @@ flowchart TD
     SEC[EncryptedSharedPreferences\nToken API + secrets]
     CTRL[ServiceControlManager]
     FG[SmsOvhForegroundService]
-    REST[SmsRestServer\n/api/send-message\n/api/send-sms\n/api/send-mms\n/api/logs\n/api/health\n/api/battery]
+    REST[SmsRestServer\n/api/send-message\n/api/send-sms\n/api/send-mms\n/api/logs\n/api/battery]
     SMS[SmsHelper / SmsManager]
     OVH[API OVH SMS]
 
@@ -173,7 +173,6 @@ app/
 | `POST` | `/api/send-mms` | Envoi MMS avec image | `senderId?`, `recipient`, `text?`, `base64Jpeg` |
 | `GET` | `/api/logs` | Retourne les 5 derniers logs persistés | Aucun |
 | `POST` | `/api/logs` | Ajoute un log applicatif | `message` |
-| `GET` | `/api/health` | Vérifie l'état du serveur REST local | Aucun |
 | `GET` | `/api/battery` | Retourne l'état batterie du téléphone | Aucun |
 
 ### Exemples de requêtes
@@ -181,7 +180,6 @@ app/
 ```bash
 curl -X POST "http://<IP_DU_TELEPHONE>:<PORT>/api/send-message" -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN_API>" -d "{\"senderId\":\"MYBRAND\",\"recipient\":\"+33612345678\",\"text\":\"Test REST\",\"base64Jpeg\":\"\"}"
 curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/logs" -H "Authorization: Bearer <TOKEN_API>"
-curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/health" -H "Authorization: Bearer <TOKEN_API>"
 curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/battery" -H "Authorization: Bearer <TOKEN_API>"
 ```
 
