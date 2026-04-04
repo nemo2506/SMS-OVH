@@ -27,7 +27,7 @@ fun OvhSmsFormSection(
 ) {
     Text(
         text = stringResource(R.string.config_ovh),
-        fontSize = 11.sp,
+        fontSize = 16.5.sp,
         color = colorResource(id = R.color.smsovh_primary),
         fontWeight = FontWeight.Bold
     )

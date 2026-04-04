@@ -45,7 +45,7 @@ fun ApiNetworkSection(
     Spacer(Modifier.height(12.dp))
     Text(
         text = stringResource(R.string.api_network_info_title),
-        fontSize = 11.sp,
+        fontSize = 16.5.sp,
         color = colorResource(id = R.color.smsovh_primary),
         fontWeight = FontWeight.Bold
     )
@@ -146,7 +146,7 @@ fun ApiNetworkSection(
                 Text(
                     text = "🔁 RESET",
                     color = colorResource(id = R.color.smsovh_primary),
-                    fontSize = 11.sp,
+                    fontSize = 16.5.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.clickable { onResetToken() }
                 )
