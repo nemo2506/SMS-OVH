@@ -216,7 +216,7 @@ class SmsRestServer @Inject constructor(
                 status == BatteryManager.BATTERY_STATUS_FULL
 
             val json = JSONObject().apply {
-                put("ok", true)
+                put("success", true)
                 put("level", percent)
                 put("isCharging", isCharging)
                 put("timestamp", System.currentTimeMillis())

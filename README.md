@@ -213,7 +213,7 @@ Réponse dédiée `/api/battery` (`200`):
 
 ```json
 {
-  "ok": true,
+  "success": true,
   "level": 78,
   "isCharging": false,
   "timestamp": 1775227009115
@@ -226,7 +226,7 @@ Réponse dédiée `/api/battery` (`200`):
 - `text` est obligatoire pour `/api/send-message` et `/api/send-sms`.
 - `base64Jpeg` est obligatoire pour `/api/send-mms`.
 - En cas d'erreur de validation, l'API renvoie un JSON d'erreur (jamais de HTML).
-- `/api/battery` renvoie le pattern: `ok`, `level`, `isCharging`, `timestamp`.
+- `/api/battery` renvoie le pattern: `success`, `level`, `isCharging`, `timestamp`.
 
 ### Format image `base64Jpeg` (MMS)
 
