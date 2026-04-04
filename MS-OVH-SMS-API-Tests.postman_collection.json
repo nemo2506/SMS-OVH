@@ -1,0 +1,342 @@
+{
+  "info": {
+    "name": "MS-OVH-SMS Circuit Tests",
+    "description": "Collection complète de tests pour SMS/MMS API REST",
+    "version": "1.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "default"
+    },
+    {
+      "key": "bearer_token",
+      "value": "YOUR_TOKEN_HERE",
+      "type": "default"
+    },
+    {
+      "key": "test_phone",
+      "value": "+33612345678",
+      "type": "default"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Vérifie que le serveur est online"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Auth - No Token (401)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Test que pas de token = 401 Unauthorized"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Auth - Invalid Token (401)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer INVALID_TOKEN_12345"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Test qu'un token invalide = 401 Unauthorized"
+      },
+      "response": []
+    },
+    {
+      "name": "4. Send SMS - Basic",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"senderId\": \"TestApp\",\"destinataire\": \"{{test_phone}}\",\"text\": \"Test SMS depuis API\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/send-sms",
+          "host": ["{{base_url}}"],
+          "path": ["api", "send-sms"]
+        },
+        "description": "Envoie un SMS simple"
+      },
+      "response": []
+    },
+    {
+      "name": "5. Send SMS - Long Message (3 parts)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"senderId\": \"TestApp\",\"destinataire\": \"{{test_phone}}\",\"text\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/send-sms",
+          "host": ["{{base_url}}"],
+          "path": ["api", "send-sms"]
+        },
+        "description": "Envoie un SMS long (+ de 160 chars)"
+      },
+      "response": []
+    },
+    {
+      "name": "6. Send SMS - French Accents",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"senderId\": \"TestApp\",\"destinataire\": \"{{test_phone}}\",\"text\": \"Bonjour, ceci est un test avec des accents: éàù\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/send-sms",
+          "host": ["{{base_url}}"],
+          "path": ["api", "send-sms"]
+        },
+        "description": "Test du support des accents français"
+      },
+      "response": []
+    },
+    {
+      "name": "7. Send SMS - Validation (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"senderId\": \"TestApp\",\"destinataire\": \"abc123\",\"text\": \"Invalid phone\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/send-sms",
+          "host": ["{{base_url}}"],
+          "path": ["api", "send-sms"]
+        },
+        "description": "Test qu'un numéro invalide retourne 400"
+      },
+      "response": []
+    },
+    {
+      "name": "8. Send MMS - With Image",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"senderId\": \"TestApp\",\"destinataire\": \"{{test_phone}}\",\"text\": \"Test MMS\",\"base64Jpeg\": \"/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAA\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/send-mms",
+          "host": ["{{base_url}}"],
+          "path": ["api", "send-mms"]
+        },
+        "description": "Envoie un MMS avec une petite image base64"
+      },
+      "response": []
+    },
+    {
+      "name": "9. Send Message - Auto SMS",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"senderId\": \"TestApp\",\"destinataire\": \"{{test_phone}}\",\"text\": \"Auto-route vers SMS\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/send-message",
+          "host": ["{{base_url}}"],
+          "path": ["api", "send-message"]
+        },
+        "description": "Route automatique sans image = SMS"
+      },
+      "response": []
+    },
+    {
+      "name": "10. Send Message - Auto MMS",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"senderId\": \"TestApp\",\"destinataire\": \"{{test_phone}}\",\"text\": \"Auto-route vers MMS\",\"base64Jpeg\": \"/9j/4AAQSkZJRgABAQEAYABgAAD\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/send-message",
+          "host": ["{{base_url}}"],
+          "path": ["api", "send-message"]
+        },
+        "description": "Route automatique avec image = MMS"
+      },
+      "response": []
+    },
+    {
+      "name": "11. Send Log",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"message\": \"Test log depuis Postman\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/logs",
+          "host": ["{{base_url}}"],
+          "path": ["api", "logs"]
+        },
+        "description": "Enregistre un log"
+      },
+      "response": []
+    },
+    {
+      "name": "12. 404 Not Found",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/invalid-endpoint",
+          "host": ["{{base_url}}"],
+          "path": ["api", "invalid-endpoint"]
+        },
+        "description": "Test d'une endpoint inexistante"
+      },
+      "response": []
+    },
+    {
+      "name": "13. 400 Bad Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{bearer_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/send-sms",
+          "host": ["{{base_url}}"],
+          "path": ["api", "send-sms"]
+        },
+        "description": "Test avec champs manquants"
+      },
+      "response": []
+    }
+  ]
+}
+
