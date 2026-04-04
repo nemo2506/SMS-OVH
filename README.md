@@ -144,32 +144,6 @@ app/
 
 ---
 
-## 🧹 Nettoyage GitHub & Fichiers volumineux
-
-> 🧹 **Nettoyage GitHub & Fichiers volumineux**
->
-> - Le dépôt a été nettoyé avec [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/) pour supprimer tous les fichiers volumineux (>100 Mo) de l’historique Git (ex : `.zip`, `.jar`, `gradle-8.5-bin/`).
-> - Le fichier `.gitignore` protège désormais contre l’ajout de tout fichier binaire ou archive inutile (voir la racine du projet).
-> - **Limite GitHub :** aucun fichier >100 Mo n’est accepté, et il est recommandé de ne pas dépasser 50 Mo par fichier.
-> - Après nettoyage, il est conseillé de recloner le dépôt pour éviter tout conflit d’historique.
-
----
-
-
-## 📝 Confidentialité Git
-
-> 📝 **Confidentialité Git**
->
-> - `.gitignore` :
->   - Exclut `.idea/`, `*.iml`, `local.properties`, `build/`, `*.apk`, `*.zip`, `*.jar`, `gradle-8.5-bin/`, etc.
->   - Protège contre l’ajout de fichiers volumineux ou sensibles.
-> - `.git/info/exclude` :
->   - Exclut localement les fichiers sensibles même si `.gitignore` est modifié
-> - **Historique GitHub nettoyé** :
->   - Tous les fichiers binaires volumineux ont été supprimés de l’historique avec BFG.
->   - Si vous aviez cloné le dépôt avant mars 2026, reclonez-le pour éviter les erreurs de push.
-
----
 
 ## 🌐 API REST locale - Accès & Endpoints
 
@@ -234,6 +208,63 @@ Erreur (`400`, `401`, `404`, `500`):
 - `text` est obligatoire pour `/api/send-message` et `/api/send-sms`.
 - `base64Jpeg` est obligatoire pour `/api/send-mms`.
 - En cas d'erreur de validation, l'API renvoie un JSON d'erreur (jamais de HTML).
+
+### Format image `base64Jpeg` (MMS)
+
+- Format attendu: image JPEG encodée en Base64 (chaîne texte).
+- Le serveur accepte:
+  - Base64 brut: `"/9j/4AAQSkZJRgABAQ..."`
+  - Data URI: `"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ..."`
+- Espaces et retours à la ligne sont nettoyés côté serveur.
+- Taille recommandée: <= 3 MB (limite MMS configurée dans l'app).
+
+Exemple Python:
+
+```python
+import base64
+
+with open("image.jpg", "rb") as f:
+    base64_jpeg = base64.b64encode(f.read()).decode("utf-8")
+
+payload = {
+    "senderId": "MYBRAND",
+    "destinataire": "+33612345678",
+    "text": "MMS test",
+    "base64Jpeg": base64_jpeg
+}
+```
+
+Exemple PHP:
+
+```php
+<?php
+$bytes = file_get_contents('image.jpg');
+$base64Jpeg = base64_encode($bytes);
+
+$payload = [
+    'senderId' => 'MYBRAND',
+    'destinataire' => '+33612345678',
+    'text' => 'MMS test',
+    'base64Jpeg' => $base64Jpeg,
+];
+```
+
+Exemple Android (Kotlin):
+
+```kotlin
+import android.util.Base64
+import java.io.File
+
+val imageBytes = File("/sdcard/Download/image.jpg").readBytes()
+val base64Jpeg = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
+
+val payload = mapOf(
+    "senderId" to "MYBRAND",
+    "destinataire" to "+33612345678",
+    "text" to "MMS test",
+    "base64Jpeg" to base64Jpeg
+)
+```
 
 ---
 
