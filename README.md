@@ -36,47 +36,35 @@
 
 ```mermaid
 flowchart TD
-    UI[UI/Activity/Fragment]
-    VM[ViewModel]
-    UC[UseCase]
-    Repo[Repository]
-    DS[DataSource]
-    ESP[EncryptedSharedPreferences]
+    UI[UI Compose\nMainActivity/MainScreen]
+    VM[MainViewModel\nStateFlow UiState]
+    UC[UseCases\nSendRestMessage / GetSettings / UpdatePort]
+    REPO[Repositories\nSms / Settings / Network]
+    ROOM[(Room DB\nSettingsDao + LogDao)]
+    SEC[EncryptedSharedPreferences\nToken + secrets]
+    FG[SmsOvhForegroundService]
+    REST[SmsRestServer\n/api/send-message\n/api/logs]
+    SMS[SmsHelper / SmsManager]
     API[API OVH SMS]
-    Hilt[Hilt/DI]
-    SH[SmsHelper]
-    NIP[NetworkInfoProvider]
-    LOGS[API /api/logs]
-    IP[IP locale détectée]
 
-    UI -->|observe| VM
-    VM -->|appelle| UC
-    UC -->|abstraction| Repo
-    Repo -->|local| DS
-    Repo -->|remote| API
-    DS -->|sécurisé| ESP
-    VM -->|injection| Hilt
-    UC -->|injection| Hilt
-    Repo -->|injection| Hilt
-    VM -->|envoi SMS| SH
-    SH -->|détecte IP| NIP
-    NIP -->|fournit| IP
-    SH -->|log statut| LOGS
-    UI -->|affiche| IP
-    UI -->|affiche| Endpoints
+    UI -->|actions utilisateur| VM
+    VM -->|orchestration| UC
+    UC -->|abstraction métier| REPO
+    REPO -->|persistance| ROOM
+    REPO -->|secrets| SEC
+    REPO -->|envoi SMS/MMS| SMS
+    SMS -->|envoi distant| API
+
+    FG -->|héberge| REST
+    REST -->|invoke| UC
+    REST -->|retour JSON| UI
+    REST -->|journalisation| ROOM
+    VM -->|observe settings/logs| ROOM
 ```
 
----
-
-## 🆕 Nouveautés (mars 2026)
-
-- 🎨 L’icône d’application utilise désormais les couleurs du thème (vectorielle, support clair/sombre)
-- 🌐 L’IP active et la liste des endpoints sont affichées dans l’interface principale
-- 🚫 L’URL d’envoi n’est plus visible ni modifiable par l’utilisateur
-- 🚫 Plus aucun log/statut n’est affiché dans l’interface (tout est envoyé par API)
-- 🧹 Nettoyage du code : suppression de toute la logique d’URL API, logs/statuts côté UI/ViewModel
 
 ---
+
 
 ## 🔒 Sécurité & Confidentialité
 
@@ -180,6 +168,72 @@ app/
 > - **Historique GitHub nettoyé** :
 >   - Tous les fichiers binaires volumineux ont été supprimés de l’historique avec BFG.
 >   - Si vous aviez cloné le dépôt avant mars 2026, reclonez-le pour éviter les erreurs de push.
+
+---
+
+## 🌐 API REST locale - Accès & Endpoints
+
+### Authentification
+
+- Toutes les routes REST locales sont protégées par token.
+- Header obligatoire: `Authorization: Bearer <TOKEN_API>`
+- Le token API est généré/copiable depuis l'interface de l'application.
+- Sans token valide, la réponse est: `401 Unauthorized`.
+
+### Base URL
+
+- `http://<IP_DU_TELEPHONE>:<PORT>`
+- Exemple: `http://<IP_DU_TELEPHONE>:<PORT>`
+
+### Endpoints disponibles
+
+| Methode | Endpoint | Description | Body JSON |
+|---|---|---|---|
+| `POST` | `/api/send-message` | Envoi intelligent SMS/MMS selon presence de `base64Jpeg` | `senderId?`, `destinataire`, `text`, `base64Jpeg?` |
+| `POST` | `/api/send-sms` | Envoi SMS texte | `senderId?`, `destinataire`, `text` |
+| `POST` | `/api/send-mms` | Envoi MMS avec image | `senderId?`, `destinataire`, `text?`, `base64Jpeg` |
+| `GET` | `/api/logs` | Retourne les 5 derniers logs persistés | Aucun |
+| `POST` | `/api/logs` | Ajoute un log applicatif | `message` |
+| `GET` | `/api/health` | Vérifie l'état du serveur REST local | Aucun |
+
+### Exemples de requêtes
+
+```bash
+curl -X POST "http://<IP_DU_TELEPHONE>:<PORT>/api/send-message" -H "Content-Type: application/json" -H "Authorization: Bearer <TOKEN_API>" -d "{\"senderId\":\"MYBRAND\",\"destinataire\":\"+33612345678\",\"text\":\"Test REST\",\"base64Jpeg\":\"\"}"
+curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/logs" -H "Authorization: Bearer <TOKEN_API>"
+curl -X GET "http://<IP_DU_TELEPHONE>:<PORT>/api/health" -H "Authorization: Bearer <TOKEN_API>"
+```
+
+### Formats de reponses JSON
+
+Succes (`200`):
+
+```json
+{
+  "success": true,
+  "message": "SMS envoyé avec succès",
+  "timestamp": 1775227009115,
+  "type": "SMS"
+}
+```
+
+Erreur (`400`, `401`, `404`, `500`):
+
+```json
+{
+  "success": false,
+  "error": "Missing request body",
+  "code": 400,
+  "timestamp": 1775226365345
+}
+```
+
+### Regles de validation importantes
+
+- `destinataire` est obligatoire pour les envois SMS/MMS et est normalisé avant envoi.
+- `text` est obligatoire pour `/api/send-message` et `/api/send-sms`.
+- `base64Jpeg` est obligatoire pour `/api/send-mms`.
+- En cas d'erreur de validation, l'API renvoie un JSON d'erreur (jamais de HTML).
 
 ---
 
