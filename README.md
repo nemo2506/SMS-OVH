@@ -234,6 +234,10 @@ Réponse dédiée `/api/battery` (`200`):
   - Data URI: `"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ..."`
 - Espaces et retours à la ligne sont nettoyés côté serveur.
 - Taille recommandée: <= 3 MB (limite MMS configurée dans l'app).
+**Limite stricte MMS en France : 300 à 600 Ko selon l’opérateur (Bouygues, SFR, Orange, Free, etc.).**
+  - Si l’image dépasse cette taille, l’envoi échouera ou l’image sera tronquée.
+  - Il est recommandé de compresser/redimensionner l’image avant l’envoi.
+  - La taille maximale acceptée peut varier selon le pays et l’opérateur, mais ne jamais dépasser 600 Ko pour une compatibilité maximale.
 
 Exemple Python:
 

@@ -35,6 +35,8 @@ class SmsRestServer @Inject constructor(
 ) : NanoHTTPD(port) {
     private companion object {
         const val API_VERSION = "1.0"
+        // Limite stricte MMS France : 600 Ko (614400 octets)
+        const val MMS_IMAGE_MAX_SIZE_BYTES = 614400
     }
 
     private fun string(resId: Int, vararg args: Any): String {
@@ -273,6 +275,22 @@ class SmsRestServer @Inject constructor(
                 null
             }
 
+            // Vérification taille image si base64Jpeg présent
+            if (!base64Jpeg.isNullOrBlank()) {
+                try {
+                    val base64Clean = base64Jpeg.substringAfter(",", base64Jpeg).replace("\n", "").replace(" ", "")
+                    val imageBytes = android.util.Base64.decode(base64Clean, android.util.Base64.DEFAULT)
+                    if (imageBytes.size > MMS_IMAGE_MAX_SIZE_BYTES) {
+                        val errorMsg = string(R.string.feedback_error_with_message, "Image trop volumineuse pour MMS (" + (imageBytes.size / 1024) + " Ko, max 600 Ko)")
+                        emitEvent(RestServerEventType.SMS_SENT_ERROR, errorMsg)
+                        saveApiLog(errorMsg)
+                        return createErrorResponse(Response.Status.BAD_REQUEST, "Image trop volumineuse pour MMS (max 600 Ko)", 400)
+                    }
+                } catch (_: Exception) {
+                    // Ignore, la vérification sera faite plus loin si besoin
+                }
+            }
+
             // Valide les champs
             if (recipient.isBlank() || text.isBlank()) {
                 emitEvent(
@@ -379,6 +397,20 @@ class SmsRestServer @Inject constructor(
 
             if (recipient.isBlank() || base64Jpeg.isNullOrBlank()) {
                 return createErrorResponse(Response.Status.BAD_REQUEST, string(R.string.missing_destinataire_or_image_message), 400)
+            }
+
+            // Vérification taille image MMS
+            try {
+                val base64Clean = base64Jpeg.substringAfter(",", base64Jpeg).replace("\n", "").replace(" ", "")
+                val imageBytes = android.util.Base64.decode(base64Clean, android.util.Base64.DEFAULT)
+                if (imageBytes.size > MMS_IMAGE_MAX_SIZE_BYTES) {
+                    val errorMsg = string(R.string.feedback_error_with_message, "Image trop volumineuse pour MMS (" + (imageBytes.size / 1024) + " Ko, max 600 Ko)")
+                    emitEvent(RestServerEventType.SMS_SENT_ERROR, errorMsg)
+                    saveApiLog(errorMsg)
+                    return createErrorResponse(Response.Status.BAD_REQUEST, "Image trop volumineuse pour MMS (max 600 Ko)", 400)
+                }
+            } catch (_: Exception) {
+                // Ignore, la vérification sera faite plus loin si besoin
             }
 
             val normalizedNumber = PhoneNumberValidator.normalize(recipient)

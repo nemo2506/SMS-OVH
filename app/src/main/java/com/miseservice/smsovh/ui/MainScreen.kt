@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -64,24 +65,35 @@ fun MainScreen(
     val uiState = viewModel.uiState.collectAsState().value
     val showLocationDeniedDialog = remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
-    val copyToClipboard: (String, String) -> Unit = { label, value ->
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText(label, value))
-        val messageRes = when (label) {
-            "send-endpoint" -> R.string.endpoint_send_copied
-            "logs-endpoint" -> R.string.endpoint_logs_copied
-            "battery-endpoint" -> R.string.endpoint_battery_copied
-            "connected-ip" -> R.string.connected_ip_copied
-            "token" -> R.string.token_copied
-            "location" -> R.string.location_copied
-            "network" -> R.string.network_copied
-            else -> R.string.endpoint_copied
+    val currentContext = rememberUpdatedState(LocalContext.current)
+
+    val copyToClipboard: (String, String) -> Unit = remember {
+        { label, value ->
+            Log.d("CLIPBOARD", "MainScreen START")
+            val ctx = currentContext.value
+            val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.setPrimaryClip(ClipData.newPlainText(label, value))
+
+            Log.d("CLIPBOARD", "MainScreen: $label, $value")
+            // Android 13+ affiche sa propre notification "Copié" — Toast inutile et supprimé
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) {
+                val messageRes = when (label) {
+                    "send-endpoint" -> R.string.endpoint_send_copied
+                    "logs-endpoint" -> R.string.endpoint_logs_copied
+                    "battery-endpoint" -> R.string.endpoint_battery_copied
+                    "connected-ip" -> R.string.connected_ip_copied
+                    "token" -> R.string.token_copied
+                    "location" -> R.string.location_copied
+                    "network" -> R.string.network_copied
+                    else -> R.string.endpoint_copied
+                }
+                Toast.makeText(
+                    ctx,
+                    withStatusPrefix(ctx.getString(messageRes), FeedbackType.SUCCESS),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
-        Toast.makeText(
-            context,
-            withStatusPrefix(context.getString(messageRes), FeedbackType.SUCCESS),
-            Toast.LENGTH_SHORT
-        ).show()
     }
 
     // Champs du formulaire SMS pilotés par le ViewModel
@@ -288,7 +300,8 @@ fun MainScreen(
                 }
 
                 1 -> {
-                    val networkLine = "${context.getString(R.string.network_label)} ${if (uiState.isIpValid) "🟢" else "🔴"}"
+                    val networkLine =
+                        "${context.getString(R.string.network_label)} ${if (uiState.isIpValid) "🟢" else "🔴"}"
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
